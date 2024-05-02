@@ -20,7 +20,7 @@ func NewConfig() *Config {
 }
 
 func (cfg *Config) InitENV() {
-	err := godotenv.Load("./.env")
+	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -30,5 +30,4 @@ func (cfg *Config) InitENV() {
 	cfg.ServerPort = os.Getenv("SERVER_PORT")
 	cfg.EmailForEmailToSend = os.Getenv("EMAIL_FOR_EMAIL_TO_SEND")
 	cfg.PasswordForEmailToSend = os.Getenv("PASSWORD_FOR_EMAIL_TO_SEND")
-
 }

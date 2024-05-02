@@ -1,7 +1,7 @@
 package models
 
 type CodeForEmail struct {
-	Id        uint   `gorm:"primaryKey"`
+	Id        uint32 `gorm:"primaryKey"`
 	Email     string `gorm:"unique"`
 	Code      string
 	CreatedAt int64
