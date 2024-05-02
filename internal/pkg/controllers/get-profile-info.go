@@ -4,6 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Server) FillProfile(c *gin.Context) {
+func (s *Server) GetProfileInfo(c *gin.Context) {
 
 }
