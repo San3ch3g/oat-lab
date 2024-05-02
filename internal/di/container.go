@@ -34,7 +34,6 @@ func get[T comparable](obj *T, builder func() T) T {
 	if *obj != *new(T) {
 		return *obj
 	}
-
 	*obj = builder()
 	return *obj
 }

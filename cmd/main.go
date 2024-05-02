@@ -25,7 +25,6 @@ func main() {
 	storage := container.GetSQLStorage()
 	server := controllers.NewServer(storage, cfg)
 	err = server.Run(cfg.ServerPort)
-	fmt.Println("Server started")
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v", err))
 	}
