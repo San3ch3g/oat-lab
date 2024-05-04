@@ -26,32 +26,36 @@ func NewServer(storage *pg.Storage, cfg *config.Config) *Server {
 func (s *Server) initRoutes() {
 	auth := s.router.Group("/auth")
 	{
-		auth.POST("/signIn", s.SignIn)
-		auth.POST("/signUp", s.SignUp)
-		auth.POST("/checkCode", s.CheckCode)
+		auth.GET("/check-user", s.CheckUser)
+		auth.POST("/sign-in", s.SignIn)
+		auth.POST("/sign-up", s.SignUp)
+		auth.POST("/check-code", s.CheckCode)
 	}
 
 	news := s.router.Group("/news")
 	{
-		news.POST("/createNews", s.CreateNews)
-		news.GET("/getNews", s.GetNews)
+		news.POST("", s.CreateNews)
+		news.GET("", s.GetNews)
+		news.DELETE("", s.DeleteNews)
 	}
 
 	order := s.router.Group("/order")
 	{
-		order.POST("/createOrder", s.CreateOrder)
-		order.GET("/getOrder", s.GetOrder)
+		order.POST("", s.CreateOrder)
+		order.GET("", s.GetOrder)
 	}
 
 	profile := s.router.Group("/profile")
 	{
-		profile.POST("/fillProfile", s.FillProfile)
-		profile.GET("/getProfileIngo", s.GetProfileInfo)
+		profile.POST("", s.FillProfile)
+		profile.GET("", s.GetProfileInfo)
+		profile.DELETE("", s.DeleteProfile)
 	}
 
-	catalog := s.router.Group("/catalog")
+	items := s.router.Group("/item")
 	{
-		catalog.GET("/getCatalog", s.GetCatalog)
+		items.POST("", s.CreateItem)
+		items.GET("", s.GetItems)
 	}
 }
 

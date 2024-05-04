@@ -7,6 +7,12 @@ import (
 	"oat-lab-module/internal/utils/config"
 )
 
+//	@title			Smart Lab
+//	@version		1.0
+//	@description	API server for Smart Lab
+//	@host			localhost:8080
+//	@BasePath		/
+
 func main() {
 	cfg := config.NewConfig()
 	cfg.InitENV()
