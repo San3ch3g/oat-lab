@@ -1,6 +1,9 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 type DeleteNewsRequest struct {
 	Id uint32 `json:"id"`
@@ -12,5 +15,15 @@ type DeleteNewsResponse struct {
 }
 
 func (s *Server) DeleteNews(c *gin.Context) {
-
+	var request DeleteNewsRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err := s.storage.DeleteNews(request.Id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	c.JSON(http.StatusOK, DeleteNewsResponse{Success: true, Message: "success"})
 }

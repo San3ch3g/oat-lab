@@ -5,6 +5,7 @@ import (
 	"github.com/jordan-wright/email"
 	"net/smtp"
 	"oat-lab-module/internal/utils/config"
+	"strings"
 )
 
 const (
@@ -44,6 +45,11 @@ func (sender *GmailSender) SendEmail(subject string, content string, to []string
 }
 
 func SendCodeToEmailService(cfg config.Config, code string, email string) error {
+	// Проверяем, что email содержит '@'
+	if !strings.Contains(email, "@") {
+		return fmt.Errorf("invalid email address: %s", email)
+	}
+
 	sender := NewGmailSender("Your verification code", cfg.EmailForEmailToSend, cfg.PasswordForEmailToSend)
 	subject := "SmartLab"
 	content := fmt.Sprintf("Hello, it's SmartLab\n And that is your authorization code : %s", code)

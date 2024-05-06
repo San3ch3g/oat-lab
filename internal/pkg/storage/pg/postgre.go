@@ -5,8 +5,10 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"oat-lab-module/internal/pkg/models"
+	"oat-lab-module/internal/pkg/services"
 	"oat-lab-module/internal/utils/config"
 	"strings"
+	"time"
 )
 
 type Storage struct {
@@ -44,6 +46,10 @@ func MustNewPostgresDB(cfg *config.Config) *gorm.DB {
 	err = createDataType(db, "sex_type", []string{string(models.MaleSex), string(models.WomanSex)})
 	if err != nil {
 		fmt.Println("sex_type is already exist")
+	}
+	err = createDataType(db, "news_category_type", []string{string(models.Default), string(models.Covid), string(models.Complex), string(models.Popular)})
+	if err != nil {
+		fmt.Println("news_category_type is already exist")
 	}
 
 	err = db.AutoMigrate(&models.User{})
@@ -84,13 +90,141 @@ func createDataType(db *gorm.DB, dataType string, values []string) error {
 	return nil
 }
 
-func (s *Storage) CheckUser(email string) error {
+func (s *Storage) isUserExist(email string) (bool, error) {
+	var user models.User
+	err := s.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func (s *Storage) CheckUser(cfg config.Config, email string) (bool, error) {
 	var foundUser models.User
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
+			code := services.GenerateCodeForEmail()
+			err := services.SendCodeToEmailService(cfg, code, email)
+			if err != nil {
+				return false, err
+			}
+			err = s.db.Create(&models.CodeForEmail{Email: email, Code: code, CreatedAt: time.Now().Format(time.RFC3339)}).Error
+			if err != nil {
+				return false, err
+			}
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func (s *Storage) SignUp(email string, password string) error {
+	userExists, err := s.isUserExist(email)
+	if err != nil {
+		return fmt.Errorf("failed to check user: %w", err)
+	}
+
+	if userExists {
+		return fmt.Errorf("user with this email already exists")
+	}
+
+	newUser := models.User{
+		Email:    email,
+		Password: password,
+	}
+
+	if result := s.db.Create(&newUser); result.Error != nil {
+		return fmt.Errorf("failed to create user: %w", result.Error)
+	}
+
+	return nil
+}
+
+func (s *Storage) SignIn(email string, password string) error {
+	var existingUser models.User
+	err := s.db.Where("email = ?", email).First(&existingUser).Error
+	if err != nil {
+		return err
+	}
+	if existingUser.Password != password {
+		return fmt.Errorf("invalid password")
+	}
+	return nil
+}
+
+func (s *Storage) CheckCode(email string, code string) error {
+	var foundCode models.CodeForEmail
+	err := s.db.Where("email = ? AND code = ?", email, code).First(&foundCode).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return fmt.Errorf("invalid code")
+		}
+		return err
+	}
+	err = s.db.Delete(&foundCode).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Storage) SendCodeAgain(cfg config.Config, email string) error {
+	var foundCode models.CodeForEmail
+	err := s.db.Where("email = ?", email).First(&foundCode).Error
+	if err != nil {
+		return err
+	}
+	s.db.Delete(&foundCode)
+	code := services.GenerateCodeForEmail()
+
+	err = services.SendCodeToEmailService(cfg, code, email)
+	if err != nil {
+		return err
+	}
+
+	if err := s.db.Create(&models.CodeForEmail{Email: email, Code: code, CreatedAt: time.Now().Format(time.RFC3339)}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Storage) CreateNews(name, description, category string, price float32) error {
+	var foundNews models.News
+	err := s.db.Where("name = ?", name).First(&foundNews).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			newNews := models.News{Name: name, Description: description, Price: price, Category: models.NewsCategory(category), CreatedAt: time.Now().Format(time.RFC3339)}
+			err := s.db.Create(&newNews).Error
+			if err != nil {
+				return err
+			}
 			return nil
 		}
+		return err
+	}
+	return fmt.Errorf("news already exists")
+}
+
+func (s *Storage) GetNews(category string) ([]models.News, error) {
+	var AllNews []models.News
+
+	err := s.db.Where("category = ?", category).Find(&AllNews).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return AllNews, nil
+}
+
+func (s *Storage) DeleteNews(id uint32) error {
+	err := s.db.Where("id = ?", id).Delete(&models.News{}).Error
+	if err != nil {
 		return err
 	}
 	return nil

@@ -5,6 +5,8 @@ import (
 	"oat-lab-module/internal/di"
 	"oat-lab-module/internal/pkg/controllers"
 	"oat-lab-module/internal/utils/config"
+
+	_ "oat-lab-module/cmd/docs"
 )
 
 //	@title			Smart Lab
@@ -30,6 +32,7 @@ func main() {
 
 	storage := container.GetSQLStorage()
 	server := controllers.NewServer(storage, cfg)
+	server.InitSwagger()
 	err = server.Run(cfg.ServerPort)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v", err))
