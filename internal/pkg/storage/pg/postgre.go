@@ -130,18 +130,19 @@ func (s *Storage) SignUp(email string, password string) error {
 	}
 
 	if userExists {
-		return fmt.Errorf("user with this email already exists")
-	}
+		var NewUser models.User
 
-	newUser := models.User{
-		Email:    email,
-		Password: password,
-	}
+		err := s.db.Where("email = ?", email).First(&NewUser).Error
+		if err != nil {
+			return err
+		}
 
-	if result := s.db.Create(&newUser); result.Error != nil {
-		return fmt.Errorf("failed to create user: %w", result.Error)
+		NewUser.Password = password
+		err = s.db.Save(&NewUser).Error
+		if err != nil {
+			return err
+		}
 	}
-
 	return nil
 }
 
@@ -167,6 +168,16 @@ func (s *Storage) CheckCode(email string, code string) error {
 		return err
 	}
 	err = s.db.Delete(&foundCode).Error
+	if err != nil {
+		return err
+	}
+
+	var User = models.User{
+		Email:     email,
+		CreatedAt: time.Now().Format(time.RFC3339),
+	}
+
+	err = s.db.Create(&User).Error
 	if err != nil {
 		return err
 	}
@@ -213,10 +224,33 @@ func (s *Storage) CreateNews(name, description, category string, price float32) 
 
 func (s *Storage) GetNews(category string) ([]models.News, error) {
 	var AllNews []models.News
-
-	err := s.db.Where("category = ?", category).Find(&AllNews).Error
-	if err != nil {
-		return nil, err
+	fmt.Println(category)
+	switch category {
+	case string(models.Covid):
+		err := s.db.Where("category = ?", category).Find(&AllNews).Error
+		if err != nil {
+			return nil, err
+		}
+		return AllNews, nil
+	case string(models.Popular):
+		err := s.db.Where("category = ?", category).Find(&AllNews).Error
+		if err != nil {
+			return nil, err
+		}
+		return AllNews, nil
+	case string(models.Complex):
+		err := s.db.Where("category = ?", category).Find(&AllNews).Error
+		if err != nil {
+			return nil, err
+		}
+		return AllNews, nil
+	case string(models.Default):
+		err := s.db.Find(&AllNews).Error
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("we don't have this category")
 	}
 
 	return AllNews, nil
@@ -224,6 +258,25 @@ func (s *Storage) GetNews(category string) ([]models.News, error) {
 
 func (s *Storage) DeleteNews(id uint32) error {
 	err := s.db.Where("id = ?", id).Delete(&models.News{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (s *Storage) FillProfile(email, firstName, lastName, middleName, birthDate string, sex models.SexType) error {
+	var foundUser models.User
+
+	err := s.db.Where("email = ?", email).First(&foundUser).Error
+	if err != nil {
+		return err
+	}
+	foundUser.BirthDate = birthDate
+	foundUser.FirstName = firstName
+	foundUser.LastName = lastName
+	foundUser.MiddleName = middleName
+	foundUser.Sex = sex
+
+	err = s.db.Save(&foundUser).Error
 	if err != nil {
 		return err
 	}

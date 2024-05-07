@@ -45,7 +45,7 @@ func (s *Server) initRoutes() {
 	{
 		news.POST("", s.CreateNews)   // ✔
 		news.GET("", s.GetNews)       // ✔
-		news.DELETE("", s.DeleteNews) //
+		news.DELETE("", s.DeleteNews) // ✔
 	}
 
 	order := s.router.Group("/order")
