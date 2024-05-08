@@ -14,13 +14,13 @@ type DeleteNewsResponse struct {
 	Message string `json:"message"`
 }
 
-func (s *Server) DeleteNews(c *gin.Context) {
+func (s *Server) DeleteCatalogItem(c *gin.Context) {
 	var request DeleteNewsRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := s.storage.DeleteNews(request.Id)
+	err := s.storage.DeleteCatalogItem(request.Id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return

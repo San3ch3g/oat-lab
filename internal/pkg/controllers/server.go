@@ -41,31 +41,31 @@ func (s *Server) initRoutes() {
 		auth.POST("/send-code-again", s.SendCodeAgain) // ✔
 	}
 
-	news := s.router.Group("/news")
+	catalog := s.router.Group("/catalog")
 	{
-		news.POST("", s.CreateNews)   // ✔
-		news.GET("", s.GetNews)       // ✔
-		news.DELETE("", s.DeleteNews) // ✔
+		catalog.POST("", s.CreateCatalogItem)   // ✔
+		catalog.GET("", s.GetCatalogItems)      // ✔
+		catalog.DELETE("", s.DeleteCatalogItem) // ✔
 	}
 
 	order := s.router.Group("/order")
 	{
-		order.POST("", s.CreateOrder) //
-		order.GET("", s.GetOrder)     //
+		order.POST("", s.CreateOrder) // TODO Реализовать
+		order.GET("", s.GetOrder)     // TODO Реализовать
 	}
 
 	profile := s.router.Group("/profile")
 	{
-		profile.POST("", s.FillProfile)     //
-		profile.GET("", s.GetProfileInfo)   //
-		profile.DELETE("", s.DeleteProfile) //
+		profile.POST("", s.CreateProfile)   //TODO ФОТО
+		profile.GET("", s.GetProfileInfo)   // ✔
+		profile.DELETE("", s.DeleteProfile) // ✔
 	}
 
-	items := s.router.Group("/item")
+	image := s.router.Group("/image")
 	{
-		items.POST("", s.CreateItem) //
-		items.GET("", s.GetItems)    //
+		image.GET("", s.GetImage) // TODO Реализовать
 	}
+
 }
 
 func (s *Server) Run(addr string) error {

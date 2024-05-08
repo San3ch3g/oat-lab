@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"errors"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -47,7 +48,7 @@ func MustNewPostgresDB(cfg *config.Config) *gorm.DB {
 	if err != nil {
 		fmt.Println("sex_type is already exist")
 	}
-	err = createDataType(db, "news_category_type", []string{string(models.Default), string(models.Covid), string(models.Complex), string(models.Popular)})
+	err = createDataType(db, "catalog_item_category_type", []string{string(models.Default), string(models.News), string(models.Covid), string(models.Complex), string(models.Popular)})
 	if err != nil {
 		fmt.Println("news_category_type is already exist")
 	}
@@ -56,17 +57,18 @@ func MustNewPostgresDB(cfg *config.Config) *gorm.DB {
 	if err != nil {
 		fmt.Println("table 'users' is already exist")
 	}
+	err = db.AutoMigrate(&models.Profile{})
+	if err != nil {
+		fmt.Println("table 'profiles' is already exist")
+	}
 	err = db.AutoMigrate(&models.CodeForEmail{})
 	if err != nil {
 		fmt.Println("table 'code_for_email' is already exist")
 	}
-	err = db.AutoMigrate(&models.Item{})
+
+	err = db.AutoMigrate(&models.CatalogItem{})
 	if err != nil {
-		fmt.Println("table 'items' is already exist")
-	}
-	err = db.AutoMigrate(&models.News{})
-	if err != nil {
-		fmt.Println("table 'news' is already exist")
+		fmt.Println("table 'catalog_items' is already exist")
 	}
 	err = db.AutoMigrate(&models.Order{})
 	if err != nil {
@@ -94,7 +96,7 @@ func (s *Storage) isUserExist(email string) (bool, error) {
 	var user models.User
 	err := s.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
 		return false, err
@@ -106,7 +108,7 @@ func (s *Storage) CheckUser(cfg config.Config, email string) (bool, error) {
 	var foundUser models.User
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			code := services.GenerateCodeForEmail()
 			err := services.SendCodeToEmailService(cfg, code, email)
 			if err != nil {
@@ -162,7 +164,7 @@ func (s *Storage) CheckCode(email string, code string) error {
 	var foundCode models.CodeForEmail
 	err := s.db.Where("email = ? AND code = ?", email, code).First(&foundCode).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("invalid code")
 		}
 		return err
@@ -205,12 +207,12 @@ func (s *Storage) SendCodeAgain(cfg config.Config, email string) error {
 	return nil
 }
 
-func (s *Storage) CreateNews(name, description, category string, price float32) error {
-	var foundNews models.News
+func (s *Storage) CreateCatalogItem(name, description, category string, price float32) error {
+	var foundNews models.CatalogItem
 	err := s.db.Where("name = ?", name).First(&foundNews).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			newNews := models.News{Name: name, Description: description, Price: price, Category: models.NewsCategory(category), CreatedAt: time.Now().Format(time.RFC3339)}
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newNews := models.CatalogItem{Name: name, Description: description, Price: price, Category: models.CatalogItemCategory(category), CreatedAt: time.Now().Format(time.RFC3339)}
 			err := s.db.Create(&newNews).Error
 			if err != nil {
 				return err
@@ -222,8 +224,8 @@ func (s *Storage) CreateNews(name, description, category string, price float32) 
 	return fmt.Errorf("news already exists")
 }
 
-func (s *Storage) GetNews(category string) ([]models.News, error) {
-	var AllNews []models.News
+func (s *Storage) GetCatalogItems(category string) ([]models.CatalogItem, error) {
+	var AllNews []models.CatalogItem
 	fmt.Println(category)
 	switch category {
 	case string(models.Covid):
@@ -249,6 +251,11 @@ func (s *Storage) GetNews(category string) ([]models.News, error) {
 		if err != nil {
 			return nil, err
 		}
+	case string(models.News):
+		err := s.db.Where("category = ?", category).Find(&AllNews).Error
+		if err != nil {
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("we don't have this category")
 	}
@@ -256,27 +263,50 @@ func (s *Storage) GetNews(category string) ([]models.News, error) {
 	return AllNews, nil
 }
 
-func (s *Storage) DeleteNews(id uint32) error {
-	err := s.db.Where("id = ?", id).Delete(&models.News{}).Error
+func (s *Storage) DeleteCatalogItem(id uint32) error {
+	err := s.db.Where("id = ?", id).Delete(&models.CatalogItem{}).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (s *Storage) FillProfile(email, firstName, lastName, middleName, birthDate string, sex models.SexType) error {
+func (s *Storage) CreateProfile(email, firstName, lastName, middleName, birthDate string, sex models.SexType) error {
+	var foundProfile models.Profile
 	var foundUser models.User
-
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
 	if err != nil {
 		return err
 	}
-	foundUser.BirthDate = birthDate
-	foundUser.FirstName = firstName
-	foundUser.LastName = lastName
-	foundUser.MiddleName = middleName
-	foundUser.Sex = sex
 
-	err = s.db.Save(&foundUser).Error
+	foundProfile.UserId = foundUser.Id
+	foundProfile.BirthDate = birthDate
+	foundProfile.FirstName = firstName
+	foundProfile.LastName = lastName
+	foundProfile.MiddleName = middleName
+	foundProfile.Sex = sex
+	err = s.db.Create(&foundProfile).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Storage) GetProfiles(email string) ([]models.Profile, error) {
+	var allProfiles []models.Profile
+	var foundUser models.User
+	err := s.db.Where("email = ?", email).First(&foundUser).Error
+	if err != nil {
+		return nil, err
+	}
+	err = s.db.Where("user_id = ?", foundUser.Id).Find(&allProfiles).Error
+	if err != nil {
+		return nil, err
+	}
+	return allProfiles, nil
+}
+
+func (s *Storage) DeleteProfile(id uint32) error {
+	err := s.db.Where("id = ?", id).Delete(&models.Profile{}).Error
 	if err != nil {
 		return err
 	}
