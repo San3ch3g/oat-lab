@@ -270,20 +270,24 @@ func (s *Storage) DeleteCatalogItem(id uint32) error {
 	}
 	return nil
 }
-func (s *Storage) CreateProfile(email, firstName, lastName, middleName, birthDate string, sex models.SexType) error {
+func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, middleName, birthDate string, sex models.SexType, profileImage []byte) error {
 	var foundProfile models.Profile
 	var foundUser models.User
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
 	if err != nil {
 		return err
 	}
-
+	imageLink, err := services.SaveImage(cfg, profileImage)
+	if err != nil {
+		return err
+	}
 	foundProfile.UserId = foundUser.Id
 	foundProfile.BirthDate = birthDate
 	foundProfile.FirstName = firstName
 	foundProfile.LastName = lastName
 	foundProfile.MiddleName = middleName
 	foundProfile.Sex = sex
+	foundProfile.ProfileImageUrl = imageLink
 	err = s.db.Create(&foundProfile).Error
 	if err != nil {
 		return err

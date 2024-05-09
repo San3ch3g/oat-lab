@@ -6,7 +6,7 @@ import (
 	"oat-lab-module/internal/pkg/models"
 )
 
-type createProfileRequest struct {
+type CreateProfileRequest struct {
 	Email        string         `json:"email"`
 	FirstName    string         `json:"firstName"`
 	LastName     string         `json:"lastName"`
@@ -16,20 +16,21 @@ type createProfileRequest struct {
 	Sex          models.SexType `json:"sex"`
 }
 
-type createProfileResponse struct {
+type CreateProfileResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
 
 func (s *Server) CreateProfile(c *gin.Context) {
-	var request createProfileRequest
+	var request CreateProfileRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := s.storage.CreateProfile(request.Email, request.FirstName, request.LastName, request.MiddleName, request.BirthDate, request.Sex)
+	err := s.storage.CreateProfile(*s.cfg, request.Email, request.FirstName, request.LastName, request.MiddleName, request.BirthDate, request.Sex, request.ProfileImage)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusCreated, createProfileResponse{Success: true, Message: "ok"})
+	c.JSON(http.StatusCreated, CreateProfileResponse{Success: true, Message: "ok"})
 }

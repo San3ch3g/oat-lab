@@ -15,6 +15,8 @@ type Config struct {
 	ServerPort             string
 	EmailForEmailToSend    string
 	PasswordForEmailToSend string
+	ServerNgrokHost        string
+	//SERVER_NGROK_HOST
 }
 
 func NewConfig() *Config {
@@ -35,4 +37,5 @@ func (cfg *Config) InitENV() {
 	cfg.PasswordForEmailToSend = os.Getenv("PASSWORD_FOR_EMAIL_TO_SEND")
 	cfg.DbHost = os.Getenv("DB_HOST")
 	cfg.DbPort = os.Getenv("DB_PORT")
+	cfg.ServerNgrokHost = os.Getenv("SERVER_NGROK_HOST")
 }

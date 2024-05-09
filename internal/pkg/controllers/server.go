@@ -56,15 +56,11 @@ func (s *Server) initRoutes() {
 
 	profile := s.router.Group("/profile")
 	{
-		profile.POST("", s.CreateProfile)   //TODO ФОТО
+		profile.POST("", s.CreateProfile)   // ✔
 		profile.GET("", s.GetProfileInfo)   // ✔
 		profile.DELETE("", s.DeleteProfile) // ✔
 	}
-
-	image := s.router.Group("/image")
-	{
-		image.GET("", s.GetImage) // TODO Реализовать
-	}
+	s.router.Static("/media", "./media") // ✔
 
 }
 
