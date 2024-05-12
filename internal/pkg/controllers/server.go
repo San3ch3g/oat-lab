@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "oat-lab-module/cmd/docs"
+	_ "oat-lab-module/docs"
 	"oat-lab-module/internal/pkg/storage/pg"
 	"oat-lab-module/internal/utils/config"
 )
@@ -27,14 +27,14 @@ func NewServer(storage *pg.Storage, cfg *config.Config) *Server {
 }
 
 func (s *Server) InitSwagger() {
-	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json")
+	url := ginSwagger.URL("6a18-188-232-188-19.ngrok-free.app/swagger/doc.json")
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 }
 
 func (s *Server) initRoutes() {
 	auth := s.router.Group("/auth")
 	{
-		auth.GET("/check-user", s.CheckUser)           // ✔
+		auth.POST("/check-user", s.CheckUser)          // ✔
 		auth.POST("/sign-in", s.SignIn)                // ✔
 		auth.POST("/sign-up", s.SignUp)                // ✔
 		auth.POST("/check-code", s.CheckCode)          // ✔

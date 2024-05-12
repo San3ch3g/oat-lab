@@ -1,0 +1,555 @@
+basePath: /
+definitions:
+  controllers.CheckCodeRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    type: object
+  controllers.CheckCodeResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.CheckUserRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  controllers.CheckUserResponse:
+    properties:
+      errorMessage;omitempty:
+        type: string
+      isRegistered:
+        type: boolean
+    type: object
+  controllers.CreateCatalogRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+    type: object
+  controllers.CreateCatalogResponse:
+    properties:
+      message;omitempty:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.CreateProfileRequest:
+    properties:
+      birthDate:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      middleName:
+        type: string
+      profileImage:
+        items:
+          type: integer
+        type: array
+      sex:
+        $ref: '#/definitions/models.SexType'
+    type: object
+  controllers.CreateProfileResponse:
+    properties:
+      message;omitempty:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.DeleteCatalogItemRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+  controllers.DeleteCatalogItemResponse:
+    properties:
+      message;omitempty:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.DeleteProfileRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+  controllers.DeleteProfileResponse:
+    properties:
+      message;omitempty:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.GetCatalogRequest:
+    properties:
+      category:
+        type: string
+    type: object
+  controllers.GetCatalogResponse:
+    properties:
+      catalogItems:
+        items:
+          $ref: '#/definitions/models.CatalogItem'
+        type: array
+      errorMessage;omitempty:
+        type: string
+    type: object
+  controllers.ProfileInfoRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  controllers.ProfileInfoResponse:
+    properties:
+      errorMessage;omitempty:
+        type: string
+      profileInfo:
+        items:
+          $ref: '#/definitions/models.Profile'
+        type: array
+    type: object
+  controllers.SendCodeAgainRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  controllers.SendCodeAgainResponse:
+    properties:
+      success:
+        type: boolean
+    type: object
+  controllers.SignInRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  controllers.SignInResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.SignUpRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  controllers.SignUpResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.CatalogItem:
+    properties:
+      category:
+        $ref: '#/definitions/models.CatalogItemCategory'
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      imageUrl:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+    type: object
+  models.CatalogItemCategory:
+    enum:
+    - all
+    - news
+    - covid
+    - popular
+    - complex
+    type: string
+    x-enum-varnames:
+    - Default
+    - News
+    - Covid
+    - Popular
+    - Complex
+  models.Profile:
+    properties:
+      birthDate:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      middleName:
+        type: string
+      profileImageUrl:
+        type: string
+      sex:
+        $ref: '#/definitions/models.SexType'
+      userId:
+        type: integer
+    type: object
+  models.SexType:
+    enum:
+    - M
+    - W
+    type: string
+    x-enum-varnames:
+    - MaleSex
+    - WomanSex
+host: 6a18-188-232-188-19.ngrok-free.app
+info:
+  contact: {}
+  description: API server for Smart Lab
+  title: Smart Lab
+  version: "1.0"
+paths:
+  /auth/check-code:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет код, отправленный на указанный email
+      parameters:
+      - description: Запрос на проверку кода
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CheckCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+      summary: Проверка кода
+      tags:
+      - Auth
+  /auth/check-user:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет, зарегистрирован ли пользователь с указанным email
+      parameters:
+      - description: Запрос для проверки пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CheckUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.CheckUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.CheckUserResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.CheckUserResponse'
+      summary: Проверка пользователя
+      tags:
+      - Auth
+  /auth/send-code-again:
+    post:
+      consumes:
+      - application/json
+      description: Повторно отправляет код подтверждения на email пользователя
+      parameters:
+      - description: Запрос для повторной отправки кода подтверждения
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SendCodeAgainRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+      summary: Повторная отправка кода подтверждения
+      tags:
+      - Auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Выполняет вход пользователя в систему с использованием email и
+        пароля
+      parameters:
+      - description: Запрос для входа пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.SignInResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.SignInResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.SignInResponse'
+      summary: Вход пользователя
+      tags:
+      - Auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя с использованием email и пароля
+      parameters:
+      - description: Запрос для регистрации пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SignUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.SignUpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.SignUpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.SignUpResponse'
+      summary: Регистрация пользователя
+      tags:
+      - Auth
+  /catalog:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет новость из каталога по идентификатору
+      parameters:
+      - description: Запрос для удаления новости из каталога
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.DeleteCatalogItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.DeleteCatalogItemResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.DeleteCatalogItemResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.DeleteCatalogItemResponse'
+      summary: Удаление новости из каталога
+      tags:
+      - Catalog
+    get:
+      consumes:
+      - application/json
+      description: Получает новости из каталога по категории
+      parameters:
+      - description: Запрос для получения новостей из каталога
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.GetCatalogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogResponse'
+      summary: Получение новостей из каталога
+      tags:
+      - Catalog
+    post:
+      consumes:
+      - application/json
+      description: Создает новую новость в каталоге
+      parameters:
+      - description: Запрос для создания новости
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateCatalogRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.CreateCatalogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.CreateCatalogResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.CreateCatalogResponse'
+      summary: Создание новости
+      tags:
+      - Catalog
+  /profile:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет профиль пользователя по идентификатору
+      parameters:
+      - description: Запрос для удаления профиля пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.DeleteProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.DeleteProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.DeleteProfileResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.DeleteProfileResponse'
+      summary: Удаление профиля пользователя
+      tags:
+      - Profiles
+    get:
+      consumes:
+      - application/json
+      description: Получает информацию о профиле пользователя по email
+      parameters:
+      - description: Запрос для получения информации о профиле пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProfileInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ProfileInfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ProfileInfoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ProfileInfoResponse'
+      summary: Получение информации о профиле пользователя
+      tags:
+      - Profiles
+    post:
+      consumes:
+      - application/json
+      description: Создает профиль пользователя с указанными данными
+      parameters:
+      - description: Запрос для создания профиля пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.CreateProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.CreateProfileResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.CreateProfileResponse'
+      summary: Создание профиля пользователя
+      tags:
+      - Profiles
+swagger: "2.0"

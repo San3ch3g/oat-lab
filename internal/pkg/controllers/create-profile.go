@@ -18,19 +18,30 @@ type CreateProfileRequest struct {
 
 type CreateProfileResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message"`
+	Message string `json:"message;omitempty"`
 }
 
+// CreateProfile создает профиль пользователя
+//	@Summary		Создание профиля пользователя
+//	@Description	Создает профиль пользователя с указанными данными
+//	@Tags			Profiles
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		CreateProfileRequest	true	"Запрос для создания профиля пользователя"
+//	@Success		201		{object}	CreateProfileResponse
+//	@Failure		400		{object}	CreateProfileResponse
+//	@Failure		500		{object}	CreateProfileResponse
+//	@Router			/profile [post]
 func (s *Server) CreateProfile(c *gin.Context) {
 	var request CreateProfileRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, CreateProfileResponse{Success: false, Message: err.Error()})
 		return
 	}
 	err := s.storage.CreateProfile(*s.cfg, request.Email, request.FirstName, request.LastName, request.MiddleName, request.BirthDate, request.Sex, request.ProfileImage)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, CreateProfileResponse{Success: false, Message: err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, CreateProfileResponse{Success: true, Message: "ok"})
+	c.JSON(http.StatusCreated, CreateProfileResponse{Success: true})
 }

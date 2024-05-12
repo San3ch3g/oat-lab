@@ -5,28 +5,39 @@ import (
 	"net/http"
 )
 
-type CreateNewsRequest struct {
+type CreateCatalogRequest struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Price       float32 `json:"price"`
 	Category    string  `json:"category,omitempty"`
 }
 
-type CreateNewsResponse struct {
+type CreateCatalogResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message"`
+	Message string `json:"message;omitempty"`
 }
 
+// CreateCatalogItem создает новую новость в каталоге
+//	@Summary		Создание новости
+//	@Description	Создает новую новость в каталоге
+//	@Tags			Catalog
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		CreateCatalogRequest	true	"Запрос для создания новости"
+//	@Success		201		{object}	CreateCatalogResponse
+//	@Failure		400		{object}	CreateCatalogResponse
+//	@Failure		500		{object}	CreateCatalogResponse
+//	@Router			/catalog [post]
 func (s *Server) CreateCatalogItem(c *gin.Context) {
-	var request CreateNewsRequest
+	var request CreateCatalogRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, CreateCatalogResponse{Success: false, Message: err.Error()})
 		return
 	}
 	err := s.storage.CreateCatalogItem(request.Name, request.Description, request.Category, request.Price)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, CreateCatalogResponse{Success: false, Message: err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, CreateNewsResponse{Success: true, Message: "News created successfully!"})
+	c.JSON(http.StatusCreated, CreateCatalogResponse{Success: true})
 }

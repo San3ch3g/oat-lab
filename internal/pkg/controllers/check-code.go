@@ -15,6 +15,18 @@ type CheckCodeResponse struct {
 	Message string `json:"message"`
 }
 
+// CheckCode godoc
+//
+//	@Summary		Проверка кода
+//	@Description	Проверяет код, отправленный на указанный email
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		CheckCodeRequest	true	"Запрос на проверку кода"
+//	@Success		200		{object}	CheckCodeResponse
+//	@Failure		400		{object}	CheckCodeResponse
+//	@Failure		422		{object}	CheckCodeResponse
+//	@Router			/auth/check-code [post]
 func (s *Server) CheckCode(c *gin.Context) {
 	var request CheckCodeRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

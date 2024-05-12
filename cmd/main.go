@@ -6,13 +6,13 @@ import (
 	"oat-lab-module/internal/pkg/controllers"
 	"oat-lab-module/internal/utils/config"
 
-	_ "oat-lab-module/cmd/docs"
+	_ "oat-lab-module/docs"
 )
 
 //	@title			Smart Lab
 //	@version		1.0
 //	@description	API server for Smart Lab
-//	@host			localhost:8080
+//	@host			6a18-188-232-188-19.ngrok-free.app
 //	@BasePath		/
 
 func main() {
