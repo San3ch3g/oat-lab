@@ -12,7 +12,7 @@ import (
 //	@title			Smart Lab
 //	@version		1.0
 //	@description	API server for Smart Lab
-//	@host			6a18-188-232-188-19.ngrok-free.app
+//	@host			b683-2a03-d000-6583-1ba0-48f1-c600-58b8-2a33.ngrok-free.app
 //	@BasePath		/
 
 func main() {

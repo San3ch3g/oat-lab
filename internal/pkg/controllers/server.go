@@ -27,7 +27,7 @@ func NewServer(storage *pg.Storage, cfg *config.Config) *Server {
 }
 
 func (s *Server) InitSwagger() {
-	url := ginSwagger.URL("6a18-188-232-188-19.ngrok-free.app/swagger/doc.json")
+	url := ginSwagger.URL("b683-2a03-d000-6583-1ba0-48f1-c600-58b8-2a33.ngrok-free.app/swagger/doc.json")
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 }
 
@@ -44,7 +44,7 @@ func (s *Server) initRoutes() {
 	catalog := s.router.Group("/catalog")
 	{
 		catalog.POST("", s.CreateCatalogItem)   // ✔
-		catalog.GET("", s.GetCatalogItems)      // ✔
+		catalog.POST("/get", s.GetCatalogItems) // ✔
 		catalog.DELETE("", s.DeleteCatalogItem) // ✔
 	}
 

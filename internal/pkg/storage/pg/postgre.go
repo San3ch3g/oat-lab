@@ -114,6 +114,7 @@ func (s *Storage) CheckUser(cfg config.Config, email string) (bool, error) {
 			if err != nil {
 				return false, err
 			}
+
 			err = s.db.Create(&models.CodeForEmail{Email: email, Code: code, CreatedAt: time.Now().Format(time.RFC3339)}).Error
 			if err != nil {
 				return false, err
@@ -226,7 +227,6 @@ func (s *Storage) CreateCatalogItem(name, description, category string, price fl
 
 func (s *Storage) GetCatalogItems(category string) ([]models.CatalogItem, error) {
 	var AllNews []models.CatalogItem
-	fmt.Println(category)
 	switch category {
 	case string(models.Covid):
 		err := s.db.Where("category = ?", category).Find(&AllNews).Error
@@ -270,14 +270,17 @@ func (s *Storage) DeleteCatalogItem(id uint32) error {
 	}
 	return nil
 }
-func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, middleName, birthDate string, sex models.SexType, profileImage []byte) error {
+func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, middleName, birthDate string, sex models.SexType, profileImage string) error {
 	var foundProfile models.Profile
 	var foundUser models.User
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
 	if err != nil {
 		return err
 	}
-	imageLink, err := services.SaveImage(cfg, profileImage)
+
+	imageBase64 := []byte(profileImage)
+
+	imageLink, err := services.SaveImage(cfg, imageBase64)
 	if err != nil {
 		return err
 	}

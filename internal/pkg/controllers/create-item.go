@@ -14,10 +14,11 @@ type CreateCatalogRequest struct {
 
 type CreateCatalogResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message;omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // CreateCatalogItem создает новую новость в каталоге
+//
 //	@Summary		Создание новости
 //	@Description	Создает новую новость в каталоге
 //	@Tags			Catalog

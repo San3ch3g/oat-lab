@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "6a18-188-232-188-19.ngrok-free.app",
+    "host": "b683-2a03-d000-6583-1ba0-48f1-c600-58b8-2a33.ngrok-free.app",
     "basePath": "/",
     "paths": {
         "/auth/check-code": {
@@ -240,50 +240,6 @@
             }
         },
         "/catalog": {
-            "get": {
-                "description": "Получает новости из каталога по категории",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Catalog"
-                ],
-                "summary": "Получение новостей из каталога",
-                "parameters": [
-                    {
-                        "description": "Запрос для получения новостей из каталога",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Создает новую новость в каталоге",
                 "consumes": [
@@ -368,6 +324,52 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/controllers.DeleteCatalogItemResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/catalog/get": {
+            "post": {
+                "description": "Получает новости из каталога по категории",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Catalog"
+                ],
+                "summary": "Получение новостей из каталога",
+                "parameters": [
+                    {
+                        "description": "Запрос для получения новостей из каталога",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogResponse"
                         }
                     }
                 }
@@ -542,7 +544,7 @@
         "controllers.CheckUserResponse": {
             "type": "object",
             "properties": {
-                "errorMessage;omitempty": {
+                "errorMessage": {
                     "type": "string"
                 },
                 "isRegistered": {
@@ -570,7 +572,7 @@
         "controllers.CreateCatalogResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -597,10 +599,7 @@
                     "type": "string"
                 },
                 "profileImage": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "sex": {
                     "$ref": "#/definitions/models.SexType"
@@ -610,7 +609,7 @@
         "controllers.CreateProfileResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -629,7 +628,7 @@
         "controllers.DeleteCatalogItemResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -648,7 +647,7 @@
         "controllers.DeleteProfileResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -673,7 +672,7 @@
                         "$ref": "#/definitions/models.CatalogItem"
                     }
                 },
-                "errorMessage;omitempty": {
+                "errorMessage": {
                     "type": "string"
                 }
             }
@@ -689,7 +688,7 @@
         "controllers.ProfileInfoResponse": {
             "type": "object",
             "properties": {
-                "errorMessage;omitempty": {
+                "errorMessage": {
                     "type": "string"
                 },
                 "profileInfo": {

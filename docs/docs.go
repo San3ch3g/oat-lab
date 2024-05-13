@@ -246,50 +246,6 @@ const docTemplate = `{
             }
         },
         "/catalog": {
-            "get": {
-                "description": "Получает новости из каталога по категории",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Catalog"
-                ],
-                "summary": "Получение новостей из каталога",
-                "parameters": [
-                    {
-                        "description": "Запрос для получения новостей из каталога",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Создает новую новость в каталоге",
                 "consumes": [
@@ -374,6 +330,52 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/controllers.DeleteCatalogItemResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/catalog/get": {
+            "post": {
+                "description": "Получает новости из каталога по категории",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Catalog"
+                ],
+                "summary": "Получение новостей из каталога",
+                "parameters": [
+                    {
+                        "description": "Запрос для получения новостей из каталога",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogResponse"
                         }
                     }
                 }
@@ -548,7 +550,7 @@ const docTemplate = `{
         "controllers.CheckUserResponse": {
             "type": "object",
             "properties": {
-                "errorMessage;omitempty": {
+                "errorMessage": {
                     "type": "string"
                 },
                 "isRegistered": {
@@ -576,7 +578,7 @@ const docTemplate = `{
         "controllers.CreateCatalogResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -603,10 +605,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "profileImage": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "sex": {
                     "$ref": "#/definitions/models.SexType"
@@ -616,7 +615,7 @@ const docTemplate = `{
         "controllers.CreateProfileResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -635,7 +634,7 @@ const docTemplate = `{
         "controllers.DeleteCatalogItemResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -654,7 +653,7 @@ const docTemplate = `{
         "controllers.DeleteProfileResponse": {
             "type": "object",
             "properties": {
-                "message;omitempty": {
+                "message": {
                     "type": "string"
                 },
                 "success": {
@@ -679,7 +678,7 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.CatalogItem"
                     }
                 },
-                "errorMessage;omitempty": {
+                "errorMessage": {
                     "type": "string"
                 }
             }
@@ -695,7 +694,7 @@ const docTemplate = `{
         "controllers.ProfileInfoResponse": {
             "type": "object",
             "properties": {
-                "errorMessage;omitempty": {
+                "errorMessage": {
                     "type": "string"
                 },
                 "profileInfo": {
@@ -855,7 +854,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "6a18-188-232-188-19.ngrok-free.app",
+	Host:             "b683-2a03-d000-6583-1ba0-48f1-c600-58b8-2a33.ngrok-free.app",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Smart Lab",

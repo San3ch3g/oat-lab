@@ -11,11 +11,12 @@ type ProfileInfoRequest struct {
 }
 
 type ProfileInfoResponse struct {
-	ErrorMessage string           `json:"errorMessage;omitempty"`
+	ErrorMessage string           `json:"errorMessage,omitempty"`
 	ProfilesInfo []models.Profile `json:"profileInfo"`
 }
 
 // GetProfileInfo получает информацию о профиле пользователя
+//
 //	@Summary		Получение информации о профиле пользователя
 //	@Description	Получает информацию о профиле пользователя по email
 //	@Tags			Profiles

@@ -11,10 +11,11 @@ type DeleteProfileRequest struct {
 
 type DeleteProfileResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message;omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // DeleteProfile удаляет профиль пользователя
+//
 //	@Summary		Удаление профиля пользователя
 //	@Description	Удаляет профиль пользователя по идентификатору
 //	@Tags			Profiles

@@ -12,16 +12,17 @@ type CreateProfileRequest struct {
 	LastName     string         `json:"lastName"`
 	MiddleName   string         `json:"middleName"`
 	BirthDate    string         `json:"birthDate"`
-	ProfileImage []byte         `json:"profileImage,omitempty"`
+	ProfileImage string         `json:"profileImage,omitempty"`
 	Sex          models.SexType `json:"sex"`
 }
 
 type CreateProfileResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message;omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // CreateProfile создает профиль пользователя
+//
 //	@Summary		Создание профиля пользователя
 //	@Description	Создает профиль пользователя с указанными данными
 //	@Tags			Profiles

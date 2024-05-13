@@ -11,10 +11,11 @@ type DeleteCatalogItemRequest struct {
 
 type DeleteCatalogItemResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message;omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // DeleteCatalogItem удаляет новость из каталога
+//
 //	@Summary		Удаление новости из каталога
 //	@Description	Удаляет новость из каталога по идентификатору
 //	@Tags			Catalog

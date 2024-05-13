@@ -21,7 +21,7 @@ definitions:
     type: object
   controllers.CheckUserResponse:
     properties:
-      errorMessage;omitempty:
+      errorMessage:
         type: string
       isRegistered:
         type: boolean
@@ -39,7 +39,7 @@ definitions:
     type: object
   controllers.CreateCatalogResponse:
     properties:
-      message;omitempty:
+      message:
         type: string
       success:
         type: boolean
@@ -57,15 +57,13 @@ definitions:
       middleName:
         type: string
       profileImage:
-        items:
-          type: integer
-        type: array
+        type: string
       sex:
         $ref: '#/definitions/models.SexType'
     type: object
   controllers.CreateProfileResponse:
     properties:
-      message;omitempty:
+      message:
         type: string
       success:
         type: boolean
@@ -77,7 +75,7 @@ definitions:
     type: object
   controllers.DeleteCatalogItemResponse:
     properties:
-      message;omitempty:
+      message:
         type: string
       success:
         type: boolean
@@ -89,7 +87,7 @@ definitions:
     type: object
   controllers.DeleteProfileResponse:
     properties:
-      message;omitempty:
+      message:
         type: string
       success:
         type: boolean
@@ -105,7 +103,7 @@ definitions:
         items:
           $ref: '#/definitions/models.CatalogItem'
         type: array
-      errorMessage;omitempty:
+      errorMessage:
         type: string
     type: object
   controllers.ProfileInfoRequest:
@@ -115,7 +113,7 @@ definitions:
     type: object
   controllers.ProfileInfoResponse:
     properties:
-      errorMessage;omitempty:
+      errorMessage:
         type: string
       profileInfo:
         items:
@@ -218,7 +216,7 @@ definitions:
     x-enum-varnames:
     - MaleSex
     - WomanSex
-host: 6a18-188-232-188-19.ngrok-free.app
+host: b683-2a03-d000-6583-1ba0-48f1-c600-58b8-2a33.ngrok-free.app
 info:
   contact: {}
   description: API server for Smart Lab
@@ -406,35 +404,6 @@ paths:
       summary: Удаление новости из каталога
       tags:
       - Catalog
-    get:
-      consumes:
-      - application/json
-      description: Получает новости из каталога по категории
-      parameters:
-      - description: Запрос для получения новостей из каталога
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.GetCatalogRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controllers.GetCatalogResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.GetCatalogResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controllers.GetCatalogResponse'
-      summary: Получение новостей из каталога
-      tags:
-      - Catalog
     post:
       consumes:
       - application/json
@@ -462,6 +431,36 @@ paths:
           schema:
             $ref: '#/definitions/controllers.CreateCatalogResponse'
       summary: Создание новости
+      tags:
+      - Catalog
+  /catalog/get:
+    post:
+      consumes:
+      - application/json
+      description: Получает новости из каталога по категории
+      parameters:
+      - description: Запрос для получения новостей из каталога
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.GetCatalogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogResponse'
+      summary: Получение новостей из каталога
       tags:
       - Catalog
   /profile:

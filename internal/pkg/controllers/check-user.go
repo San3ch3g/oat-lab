@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"oat-lab-module/internal/pkg/services"
 )
 
 type CheckUserRequest struct {
@@ -11,10 +12,11 @@ type CheckUserRequest struct {
 
 type CheckUserResponse struct {
 	IsRegistered bool   `json:"isRegistered"`
-	ErrorMessage string `json:"errorMessage;omitempty"`
+	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
 // CheckUser проверяет, зарегистрирован ли пользователь
+//
 //	@Summary		Проверка пользователя
 //	@Description	Проверяет, зарегистрирован ли пользователь с указанным email
 //	@Tags			Auth
@@ -29,6 +31,11 @@ func (s *Server) CheckUser(c *gin.Context) {
 	var request CheckUserRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, CheckUserResponse{ErrorMessage: err.Error()})
+		return
+	}
+	res := services.ValidEmail(request.Email)
+	if !res {
+		c.JSON(http.StatusBadRequest, CheckUserResponse{ErrorMessage: "Invalid email"})
 		return
 	}
 

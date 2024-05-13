@@ -12,10 +12,11 @@ type GetCatalogRequest struct {
 
 type GetCatalogResponse struct {
 	News         []models.CatalogItem `json:"catalogItems"`
-	ErrorMessage string               `json:"errorMessage;omitempty"`
+	ErrorMessage string               `json:"errorMessage,omitempty"`
 }
 
 // GetCatalogItems получает новости из каталога
+//
 //	@Summary		Получение новостей из каталога
 //	@Description	Получает новости из каталога по категории
 //	@Tags			Catalog
@@ -25,7 +26,7 @@ type GetCatalogResponse struct {
 //	@Success		200		{object}	GetCatalogResponse
 //	@Failure		400		{object}	GetCatalogResponse
 //	@Failure		500		{object}	GetCatalogResponse
-//	@Router			/catalog [get]
+//	@Router			/catalog/get [post]
 func (s *Server) GetCatalogItems(c *gin.Context) {
 	var request GetCatalogRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
