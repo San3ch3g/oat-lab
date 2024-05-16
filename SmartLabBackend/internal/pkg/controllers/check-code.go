@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -35,6 +36,8 @@ func (s *Server) CheckCode(c *gin.Context) {
 		})
 		return
 	}
+
+	fmt.Printf("request Email = '%v', request code = '%v'", request.Email, request.Code)
 
 	userId, err := s.storage.CheckCode(request.Email, request.Code)
 	if err != nil {

@@ -31,7 +31,7 @@ type CreateCatalogResponse struct {
 //	@Success		201		{object}	CreateCatalogResponse
 //	@Failure		400		{object}	CreateCatalogResponse
 //	@Failure		500		{object}	CreateCatalogResponse
-//	@Router			/catalog [post]
+//	@Router			/catalog/ [post]
 func (s *Server) CreateCatalogItem(c *gin.Context) {
 	var request CreateCatalogRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

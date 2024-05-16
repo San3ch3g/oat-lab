@@ -15,10 +15,10 @@ type MedCardsInfoResponse struct {
 	MedCardsInfo []models.MedCard `json:"profileInfo"`
 }
 
-// GetMedCardsInfo получает информацию о профиле пользователя
+// GetMedCardsInfo получает информацию о мед картах пользователя
 //
-//	@Summary		Получение информации о профиле пользователя
-//	@Description	Получает информацию о профиле пользователя по email
+//	@Summary		Получение информации о мед картах пользователя
+//	@Description	Получает информацию о мед картах пользователя по email
 //	@Tags			MedCards
 //	@Accept			json
 //	@Produce		json

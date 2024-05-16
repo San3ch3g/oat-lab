@@ -16,12 +16,12 @@ type MedCardResponse struct {
 
 // DeleteMedCard удаляет профиль пользователя
 //
-//	@Summary		Удаление профиля пользователя
-//	@Description	Удаляет профиль пользователя по идентификатору
+//	@Summary		Удаление мед карты пользователя
+//	@Description	Удаляет мед карты пользователя по идентификатору
 //	@Tags			MedCards
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		MedCardRequest	true	"Запрос для удаления профиля пользователя"
+//	@Param			request	body		MedCardRequest	true	"Запрос для удаления мед карты пользователя"
 //	@Success		200		{object}	MedCardResponse
 //	@Failure		400		{object}	MedCardResponse
 //	@Failure		500		{object}	MedCardResponse

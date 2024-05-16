@@ -101,7 +101,7 @@ func (s *Storage) CheckCode(email string, code string) (uint32, error) {
 			if err != nil {
 				return 0, err
 			}
-			err = s.db.Delete(foundCodeRecord).Error
+			err = s.db.Delete(&foundCodeRecord).Error
 			if err != nil {
 				return 0, err
 			}
@@ -116,7 +116,7 @@ func (s *Storage) CheckCode(email string, code string) (uint32, error) {
 		}
 		return 0, err
 	}
-	err := s.db.Where("email = ? AND code = ?", email, code).First(&models.CodeForEmail{}).Error
+	err := s.db.Where("email = ? AND code = ?", email, code).First(&foundCodeRecord).Error
 	if err != nil {
 		return 0, err
 	}
@@ -219,7 +219,7 @@ func (s *Storage) DeleteCatalogItem(id uint32) error {
 	return nil
 }
 
-func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, middleName, birthDate string, sex models.SexType, profileImage string) error {
+func (s *Storage) CreateMedCard(cfg config.Config, email, firstName, lastName, middleName, birthDate string, sex models.SexType) error {
 	var foundProfile models.MedCard
 	var foundUser models.User
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
@@ -227,19 +227,13 @@ func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, m
 		return err
 	}
 
-	imageBase64 := []byte(profileImage)
-
-	imageLink, err := services.SaveImage(cfg, imageBase64)
-	if err != nil {
-		return err
-	}
 	foundProfile.UserId = foundUser.Id
 	foundProfile.BirthDate = birthDate
 	foundProfile.FirstName = firstName
 	foundProfile.LastName = lastName
 	foundProfile.MiddleName = middleName
 	foundProfile.Sex = sex
-	foundProfile.ProfileImageUrl = imageLink
+
 	err = s.db.Create(&foundProfile).Error
 	if err != nil {
 		return err
@@ -301,4 +295,37 @@ func (s *Storage) GetCatalogItemById(itemId uint32) (models.CatalogItem, error) 
 		return foundCatalogItem, err
 	}
 	return foundCatalogItem, nil
+}
+
+func (s *Storage) UpdateMedCard(birthDate, sex, firstName, middleName, lastName, medCardImageUrl string, medCardId uint32) error {
+	var foundMedCard models.MedCard
+	err := s.db.Where("id = ?", medCardId).First(&foundMedCard).Error
+	if err != nil {
+		return err
+	}
+	updatedMedCard := foundMedCard
+	if foundMedCard.Sex != models.SexType(sex) {
+		updatedMedCard.Sex = models.SexType(sex)
+	}
+	if foundMedCard.FirstName != firstName {
+		updatedMedCard.FirstName = firstName
+	}
+	if foundMedCard.MiddleName != middleName {
+		updatedMedCard.MiddleName = middleName
+	}
+	if foundMedCard.LastName != lastName {
+		updatedMedCard.LastName = lastName
+	}
+	if foundMedCard.BirthDate != birthDate {
+		updatedMedCard.BirthDate = birthDate
+	}
+	if medCardImageUrl != "" {
+		updatedMedCard.MedCardImageUrl = medCardImageUrl
+	}
+	err = s.db.Save(&updatedMedCard).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

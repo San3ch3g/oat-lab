@@ -15,5 +15,5 @@ type MedCard struct {
 	MiddleName      string  `json:"middleName"`
 	BirthDate       string  `json:"birthDate"`
 	Sex             SexType `json:"sex" gorm:"type:sex_type"`
-	ProfileImageUrl string  `json:"profileImageUrl"`
+	MedCardImageUrl string  `json:"profileImageUrl"`
 }

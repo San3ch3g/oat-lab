@@ -43,8 +43,8 @@ func (s *Server) initRoutes() {
 	catalog := s.router.Group("/catalog")
 	{
 		catalog.GET("/by-id", s.GetCatalogItemById) // ✔
-		catalog.POST("", s.CreateCatalogItem)       // ✔
-		catalog.GET("/get", s.GetCatalogItems)      // ✔
+		catalog.POST("/", s.CreateCatalogItem)      // ✔
+		catalog.GET("/", s.GetCatalogItems)         // ✔
 		catalog.DELETE("", s.DeleteCatalogItem)     // ✔
 	}
 
@@ -56,6 +56,7 @@ func (s *Server) initRoutes() {
 
 	profile := s.router.Group("/med-card")
 	{
+		profile.PUT("", s.UpdateMedCard)
 		profile.POST("", s.CreateMedCard)   // ✔
 		profile.GET("", s.GetMedCardsInfo)  // ✔
 		profile.DELETE("", s.DeleteMedCard) // ✔

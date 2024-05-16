@@ -50,8 +50,6 @@ definitions:
         type: string
       middleName:
         type: string
-      profileImage:
-        type: string
       sex:
         $ref: '#/definitions/models.SexType'
     type: object
@@ -151,6 +149,30 @@ definitions:
       success:
         type: boolean
     type: object
+  controllers.UpdateMedCardRequest:
+    properties:
+      birthDate:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      medCardId:
+        type: integer
+      middleName:
+        type: string
+      profileImageUrl:
+        type: string
+      sex:
+        type: string
+    type: object
+  controllers.UpdateMedCardResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+    type: object
   models.CatalogItem:
     properties:
       bio:
@@ -213,7 +235,7 @@ definitions:
     x-enum-varnames:
     - MaleSex
     - WomanSex
-host: localhost:8080
+host: 407e-95-189-144-121.ngrok-free.app
 info:
   contact: {}
   description: API server for Smart Lab
@@ -340,35 +362,6 @@ paths:
       summary: Удаление новости из каталога
       tags:
       - Catalog
-    post:
-      consumes:
-      - application/json
-      description: Создает новую новость в каталоге
-      parameters:
-      - description: Запрос для создания новости
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.CreateCatalogRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/controllers.CreateCatalogResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.CreateCatalogResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controllers.CreateCatalogResponse'
-      summary: Создание новости
-      tags:
-      - Catalog
   /catalog/:
     get:
       consumes:
@@ -396,6 +389,35 @@ paths:
           schema:
             $ref: '#/definitions/controllers.GetCatalogResponse'
       summary: Получение новостей из каталога
+      tags:
+      - Catalog
+    post:
+      consumes:
+      - application/json
+      description: Создает новую новость в каталоге
+      parameters:
+      - description: Запрос для создания новости
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateCatalogRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.CreateCatalogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.CreateCatalogResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.CreateCatalogResponse'
+      summary: Создание новости
       tags:
       - Catalog
   /catalog/by-id:
@@ -431,9 +453,9 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Удаляет профиль пользователя по идентификатору
+      description: Удаляет мед карты пользователя по идентификатору
       parameters:
-      - description: Запрос для удаления профиля пользователя
+      - description: Запрос для удаления мед карты пользователя
         in: body
         name: request
         required: true
@@ -454,13 +476,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controllers.MedCardResponse'
-      summary: Удаление профиля пользователя
+      summary: Удаление мед карты пользователя
       tags:
       - MedCards
     get:
       consumes:
       - application/json
-      description: Получает информацию о профиле пользователя по email
+      description: Получает информацию о мед картах пользователя по email
       parameters:
       - description: Email пользователя
         in: query
@@ -482,15 +504,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controllers.MedCardsInfoResponse'
-      summary: Получение информации о профиле пользователя
+      summary: Получение информации о мед картах пользователя
       tags:
       - MedCards
     post:
       consumes:
       - application/json
-      description: Создает профиль пользователя с указанными данными
+      description: Создает мед карты пользователя с указанными данными
       parameters:
-      - description: Запрос для создания профиля пользователя
+      - description: Запрос для создания мед карты пользователя
         in: body
         name: request
         required: true
@@ -511,7 +533,36 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controllers.CreateMedCardResponse'
-      summary: Создание профиля пользователя
+      summary: Создание мед карты пользователя
+      tags:
+      - MedCards
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию мед карты
+      parameters:
+      - description: Запрос для создания профиля пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.UpdateMedCardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.UpdateMedCardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.UpdateMedCardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.UpdateMedCardResponse'
+      summary: Обновление информации мед карты
       tags:
       - MedCards
 swagger: "2.0"

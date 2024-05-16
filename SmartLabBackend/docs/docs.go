@@ -154,50 +154,6 @@ const docTemplate = `{
             }
         },
         "/catalog": {
-            "post": {
-                "description": "Создает новую новость в каталоге",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Catalog"
-                ],
-                "summary": "Создание новости",
-                "parameters": [
-                    {
-                        "description": "Запрос для создания новости",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CreateCatalogRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CreateCatalogResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CreateCatalogResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CreateCatalogResponse"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "description": "Удаляет новость из каталога по идентификатору",
                 "consumes": [
@@ -285,6 +241,50 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Создает новую новость в каталоге",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Catalog"
+                ],
+                "summary": "Создание новости",
+                "parameters": [
+                    {
+                        "description": "Запрос для создания новости",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCatalogRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCatalogResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCatalogResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCatalogResponse"
+                        }
+                    }
+                }
             }
         },
         "/catalog/by-id": {
@@ -333,7 +333,7 @@ const docTemplate = `{
         },
         "/med-card": {
             "get": {
-                "description": "Получает информацию о профиле пользователя по email",
+                "description": "Получает информацию о мед картах пользователя по email",
                 "consumes": [
                     "application/json"
                 ],
@@ -343,7 +343,7 @@ const docTemplate = `{
                 "tags": [
                     "MedCards"
                 ],
-                "summary": "Получение информации о профиле пользователя",
+                "summary": "Получение информации о мед картах пользователя",
                 "parameters": [
                     {
                         "type": "string",
@@ -374,8 +374,8 @@ const docTemplate = `{
                     }
                 }
             },
-            "post": {
-                "description": "Создает профиль пользователя с указанными данными",
+            "put": {
+                "description": "Обновляет информацию мед карты",
                 "consumes": [
                     "application/json"
                 ],
@@ -385,10 +385,54 @@ const docTemplate = `{
                 "tags": [
                     "MedCards"
                 ],
-                "summary": "Создание профиля пользователя",
+                "summary": "Обновление информации мед карты",
                 "parameters": [
                     {
                         "description": "Запрос для создания профиля пользователя",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.UpdateMedCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.UpdateMedCardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.UpdateMedCardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.UpdateMedCardResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создает мед карты пользователя с указанными данными",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MedCards"
+                ],
+                "summary": "Создание мед карты пользователя",
+                "parameters": [
+                    {
+                        "description": "Запрос для создания мед карты пользователя",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -419,7 +463,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Удаляет профиль пользователя по идентификатору",
+                "description": "Удаляет мед карты пользователя по идентификатору",
                 "consumes": [
                     "application/json"
                 ],
@@ -429,10 +473,10 @@ const docTemplate = `{
                 "tags": [
                     "MedCards"
                 ],
-                "summary": "Удаление профиля пользователя",
+                "summary": "Удаление мед карты пользователя",
                 "parameters": [
                     {
-                        "description": "Запрос для удаления профиля пользователя",
+                        "description": "Запрос для удаления мед карты пользователя",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -540,9 +584,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "middleName": {
-                    "type": "string"
-                },
-                "profileImage": {
                     "type": "string"
                 },
                 "sex": {
@@ -700,6 +741,43 @@ const docTemplate = `{
                 }
             }
         },
+        "controllers.UpdateMedCardRequest": {
+            "type": "object",
+            "properties": {
+                "birthDate": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "medCardId": {
+                    "type": "integer"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "profileImageUrl": {
+                    "type": "string"
+                },
+                "sex": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.UpdateMedCardResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "models.CatalogItem": {
             "type": "object",
             "properties": {
@@ -795,7 +873,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "407e-95-189-144-121.ngrok-free.app",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Smart Lab",

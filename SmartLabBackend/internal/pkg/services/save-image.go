@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/google/uuid"
 	"oat-lab-module/internal/utils/config"
@@ -8,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func SaveImage(cfg config.Config, picture []byte) (string, error) {
+func SaveImage(cfg config.Config, base64Image string) (string, error) {
 	name, _ := uuid.NewRandom()
 	filename := fmt.Sprintf("%s.png", name)
 	directory := "./media"
@@ -19,19 +20,21 @@ func SaveImage(cfg config.Config, picture []byte) (string, error) {
 		return "", err
 	}
 
+	imageBytes, err := base64.StdEncoding.DecodeString(base64Image)
+	if err != nil {
+		return "", err
+	}
+
 	file, err := os.Create(filePath)
 	if err != nil {
 		return "", err
 	}
 	defer file.Close()
 
-	if _, err := file.Write(picture); err != nil {
+	if _, err := file.Write(imageBytes); err != nil {
 		return "", err
 	}
 
-	var link string
-	if picture != nil {
-		link = cfg.ServerNgrokHost + cfg.ServerPort + "/media/" + filename
-	}
+	link := cfg.ServerNgrokHost + "/media/" + filename
 	return link, nil
 }
