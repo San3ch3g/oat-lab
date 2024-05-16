@@ -27,24 +27,25 @@ func NewServer(storage *pg.Storage, cfg *config.Config) *Server {
 }
 
 func (s *Server) InitSwagger() {
-	url := ginSwagger.URL("5a37-92-124-163-102.ngrok-free.app/swagger/doc.json")
+	swagURL := s.cfg.ServerNgrokHost + "/swagger/doc.json"
+	url := ginSwagger.URL(swagURL)
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 }
 
 func (s *Server) initRoutes() {
 	auth := s.router.Group("/auth")
 	{
-		auth.POST("/authorize", s.Authorize)           //
+		auth.POST("/send-code", s.SendCode)            // ✔
 		auth.POST("/check-code", s.CheckCode)          // ✔
 		auth.POST("/send-code-again", s.SendCodeAgain) // ✔
 	}
 
 	catalog := s.router.Group("/catalog")
 	{
-		catalog.POST("/get-by-id", s.GetCatalogItemById)
-		catalog.POST("", s.CreateCatalogItem)   // ✔
-		catalog.POST("/get", s.GetCatalogItems) // ✔
-		catalog.DELETE("", s.DeleteCatalogItem) // ✔
+		catalog.GET("/by-id", s.GetCatalogItemById) // ✔
+		catalog.POST("", s.CreateCatalogItem)       // ✔
+		catalog.GET("/get", s.GetCatalogItems)      // ✔
+		catalog.DELETE("", s.DeleteCatalogItem)     // ✔
 	}
 
 	order := s.router.Group("/order")
@@ -53,11 +54,11 @@ func (s *Server) initRoutes() {
 		order.GET("", s.GetOrder)     // TODO Реализовать
 	}
 
-	profile := s.router.Group("/profile")
+	profile := s.router.Group("/med-card")
 	{
-		profile.POST("", s.CreateProfile)   // ✔
-		profile.GET("", s.GetProfileInfo)   // ✔
-		profile.DELETE("", s.DeleteProfile) // ✔
+		profile.POST("", s.CreateMedCard)   // ✔
+		profile.GET("", s.GetMedCardsInfo)  // ✔
+		profile.DELETE("", s.DeleteMedCard) // ✔
 	}
 	s.router.Static("/media", "./media") // ✔
 

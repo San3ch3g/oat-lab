@@ -14,11 +14,10 @@ type CatalogItem struct {
 	Id          uint32              `gorm:"primaryKey" json:"id"`
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
-	Price       float32             `json:"price"`
-	TimeRes     string              `json:"timeRes"`
+	Price       string              `json:"price"`
+	TimeRes     string              `json:"timeResult"`
 	Preparation string              `json:"preparation"`
 	BIO         string              `json:"bio"`
 	Category    CatalogItemCategory `json:"category" gorm:"default:'all'"`
-	ImageUrl    string              `json:"imageUrl"`
 	CreatedAt   string              `json:"createdAt"`
 }

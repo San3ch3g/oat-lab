@@ -7,7 +7,7 @@ import (
 )
 
 type GetCatalogRequest struct {
-	Category string `json:"category"`
+	Category string `form:"category"`
 }
 
 type GetCatalogResponse struct {
@@ -22,14 +22,14 @@ type GetCatalogResponse struct {
 //	@Tags			Catalog
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		GetCatalogRequest	true	"Запрос для получения новостей из каталога"
-//	@Success		200		{object}	GetCatalogResponse
-//	@Failure		400		{object}	GetCatalogResponse
-//	@Failure		500		{object}	GetCatalogResponse
-//	@Router			/catalog/get [post]
+//	@Param			category	query		string	true	"Категория для получения новостей из каталога"
+//	@Success		200			{object}	GetCatalogResponse
+//	@Failure		400			{object}	GetCatalogResponse
+//	@Failure		500			{object}	GetCatalogResponse
+//	@Router			/catalog/ [get]
 func (s *Server) GetCatalogItems(c *gin.Context) {
 	var request GetCatalogRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindQuery(&request); err != nil {
 		c.JSON(http.StatusBadRequest, GetCatalogResponse{ErrorMessage: err.Error()})
 		return
 	}
@@ -41,5 +41,4 @@ func (s *Server) GetCatalogItems(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, GetCatalogResponse{News: AllNews})
-
 }

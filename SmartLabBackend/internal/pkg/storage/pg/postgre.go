@@ -92,30 +92,39 @@ func createDataType(db *gorm.DB, dataType string, values []string) error {
 	return nil
 }
 
-func (s *Storage) CheckCode(email string, code string) error {
-	var foundCode models.CodeForEmail
-	err := s.db.Where("email = ? AND code = ?", email, code).First(&foundCode).Error
-	if err != nil {
+func (s *Storage) CheckCode(email string, code string) (uint32, error) {
+	var foundUser models.User
+	var foundCodeRecord models.CodeForEmail
+	if err := s.db.Where("email = ?", email).First(&foundUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return fmt.Errorf("invalid code")
+			err := s.db.Where("email = ? AND code = ?", email, code).First(&foundCodeRecord).Error
+			if err != nil {
+				return 0, err
+			}
+			err = s.db.Delete(foundCodeRecord).Error
+			if err != nil {
+				return 0, err
+			}
+			var newUser models.User
+			newUser.Email = email
+			newUser.CreatedAt = time.Now().Format(time.RFC3339)
+			err = s.db.Create(&newUser).Error
+			if err != nil {
+				return 0, err
+			}
+			return newUser.Id, nil
 		}
-		return err
+		return 0, err
 	}
-	err = s.db.Delete(&foundCode).Error
+	err := s.db.Where("email = ? AND code = ?", email, code).First(&models.CodeForEmail{}).Error
 	if err != nil {
-		return err
+		return 0, err
 	}
-
-	var User = models.User{
-		Email:     email,
-		CreatedAt: time.Now().Format(time.RFC3339),
-	}
-
-	err = s.db.Create(&User).Error
+	err = s.db.Delete(foundCodeRecord).Error
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return foundUser.Id, nil
 }
 
 func (s *Storage) SendCodeAgain(cfg config.Config, email string) error {
@@ -139,12 +148,20 @@ func (s *Storage) SendCodeAgain(cfg config.Config, email string) error {
 	return nil
 }
 
-func (s *Storage) CreateCatalogItem(name, description, category string, price float32, imageLink string) error {
+func (s *Storage) CreateCatalogItem(name, description, category, price, bio, timeRes, preparation string) error {
 	var foundNews models.CatalogItem
 	err := s.db.Where("name = ?", name).First(&foundNews).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			newNews := models.CatalogItem{Name: name, Description: description, Price: price, Category: models.CatalogItemCategory(category), ImageUrl: imageLink, CreatedAt: time.Now().Format(time.RFC3339)}
+			newNews := models.CatalogItem{
+				Name:        name,
+				Description: description,
+				Price:       price,
+				TimeRes:     timeRes,
+				Preparation: preparation,
+				BIO:         bio,
+				Category:    models.CatalogItemCategory(category),
+				CreatedAt:   time.Now().Format(time.RFC3339)}
 			err := s.db.Create(&newNews).Error
 			if err != nil {
 				return err
@@ -230,20 +247,30 @@ func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, m
 	return nil
 }
 
-func (s *Storage) Authorize(cfg config.Config, email string) (uint32, error) {
-	var newUser models.User
-	newUser.Email = email
-	newUser.CreatedAt = time.Now().Format(time.RFC3339)
-	err := s.db.Create(&newUser).Error
+func (s *Storage) clearCodeRecords(email string) error {
+	err := s.db.Where("email = ?", email).Delete(&models.CodeForEmail{}).Error
 	if err != nil {
-		return 0, err
+		return err
 	}
+	return nil
+}
+
+func (s *Storage) SendCode(cfg config.Config, email string) error {
+	var newCode models.CodeForEmail
+	err := s.clearCodeRecords(email)
 	code := services.GenerateCodeForEmail()
 	err = services.SendCodeToEmailService(cfg, code, email)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return newUser.Id, nil
+	newCode.Email = email
+	newCode.Code = code
+	newCode.CreatedAt = time.Now().Format(time.RFC3339)
+	err = s.db.Create(&newCode).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Storage) GetProfiles(email string) ([]models.MedCard, error) {

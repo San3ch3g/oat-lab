@@ -15,52 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/authorize": {
-            "post": {
-                "description": "Отправляет код на email и создаёт запись в бд",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Проверка email",
-                "parameters": [
-                    {
-                        "description": "Запрос для отправки кода и создания записи в бд",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.AuthorizeRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.AuthorizeResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.AuthorizeResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.AuthorizeResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/auth/check-code": {
             "post": {
                 "description": "Проверяет код, отправленный на указанный email",
@@ -102,6 +56,52 @@ const docTemplate = `{
                         "description": "Unprocessable Entity",
                         "schema": {
                             "$ref": "#/definitions/controllers.CheckCodeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/send-code": {
+            "post": {
+                "description": "Отправляет код на email и создаёт запись в бд",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Проверка email",
+                "parameters": [
+                    {
+                        "description": "Запрос для отправки кода и создания записи в бд",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeResponse"
                         }
                     }
                 }
@@ -243,8 +243,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/catalog/get": {
-            "post": {
+        "/catalog/": {
+            "get": {
                 "description": "Получает новости из каталога по категории",
                 "consumes": [
                     "application/json"
@@ -258,13 +258,11 @@ const docTemplate = `{
                 "summary": "Получение новостей из каталога",
                 "parameters": [
                     {
-                        "description": "Запрос для получения новостей из каталога",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogRequest"
-                        }
+                        "type": "string",
+                        "description": "Категория для получения новостей из каталога",
+                        "name": "category",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -289,8 +287,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/catalog/get-by-id": {
-            "post": {
+        "/catalog/by-id": {
+            "get": {
                 "description": "Получает элемент каталога по его ID.",
                 "consumes": [
                     "application/json"
@@ -304,13 +302,11 @@ const docTemplate = `{
                 "summary": "Получить элемент каталога по ID.",
                 "parameters": [
                     {
-                        "description": "Тело запроса с itemId",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.GetCatalogItemByIdRequest"
-                        }
+                        "type": "integer",
+                        "description": "ID элемента каталога",
+                        "name": "itemId",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -335,7 +331,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/profile": {
+        "/med-card": {
             "get": {
                 "description": "Получает информацию о профиле пользователя по email",
                 "consumes": [
@@ -345,37 +341,35 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Profiles"
+                    "MedCards"
                 ],
                 "summary": "Получение информации о профиле пользователя",
                 "parameters": [
                     {
-                        "description": "Запрос для получения информации о профиле пользователя",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ProfileInfoRequest"
-                        }
+                        "type": "string",
+                        "description": "Email пользователя",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ProfileInfoResponse"
+                            "$ref": "#/definitions/controllers.MedCardsInfoResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ProfileInfoResponse"
+                            "$ref": "#/definitions/controllers.MedCardsInfoResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ProfileInfoResponse"
+                            "$ref": "#/definitions/controllers.MedCardsInfoResponse"
                         }
                     }
                 }
@@ -389,7 +383,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Profiles"
+                    "MedCards"
                 ],
                 "summary": "Создание профиля пользователя",
                 "parameters": [
@@ -399,7 +393,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.CreateProfileRequest"
+                            "$ref": "#/definitions/controllers.CreateMedCardRequest"
                         }
                     }
                 ],
@@ -407,19 +401,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/controllers.CreateProfileResponse"
+                            "$ref": "#/definitions/controllers.CreateMedCardResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controllers.CreateProfileResponse"
+                            "$ref": "#/definitions/controllers.CreateMedCardResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.CreateProfileResponse"
+                            "$ref": "#/definitions/controllers.CreateMedCardResponse"
                         }
                     }
                 }
@@ -433,7 +427,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Profiles"
+                    "MedCards"
                 ],
                 "summary": "Удаление профиля пользователя",
                 "parameters": [
@@ -443,7 +437,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.DeleteProfileRequest"
+                            "$ref": "#/definitions/controllers.MedCardRequest"
                         }
                     }
                 ],
@@ -451,19 +445,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.DeleteProfileResponse"
+                            "$ref": "#/definitions/controllers.MedCardResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controllers.DeleteProfileResponse"
+                            "$ref": "#/definitions/controllers.MedCardResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.DeleteProfileResponse"
+                            "$ref": "#/definitions/controllers.MedCardResponse"
                         }
                     }
                 }
@@ -471,28 +465,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.AuthorizeRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "controllers.AuthorizeResponse": {
-            "type": "object",
-            "properties": {
-                "errorMessage": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
         "controllers.CheckCodeRequest": {
             "type": "object",
             "properties": {
@@ -510,28 +482,34 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "success": {
-                    "type": "boolean"
+                "userId": {
+                    "type": "integer"
                 }
             }
         },
         "controllers.CreateCatalogRequest": {
             "type": "object",
             "properties": {
+                "bio": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
-                "image": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },
+                "preparation": {
+                    "type": "string"
+                },
                 "price": {
-                    "type": "number"
+                    "type": "string"
+                },
+                "timeResult": {
+                    "type": "string"
                 }
             }
         },
@@ -546,7 +524,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.CreateProfileRequest": {
+        "controllers.CreateMedCardRequest": {
             "type": "object",
             "properties": {
                 "birthDate": {
@@ -572,7 +550,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.CreateProfileResponse": {
+        "controllers.CreateMedCardResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -602,36 +580,12 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.DeleteProfileRequest": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "controllers.DeleteProfileResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "controllers.GetCatalogItemByIdRequest": {
-            "type": "object",
-            "properties": {
-                "itemId": {
-                    "type": "integer"
-                }
-            }
-        },
         "controllers.GetCatalogItemByIdResponse": {
             "type": "object",
             "properties": {
+                "bio": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -653,15 +607,13 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "preparation": {
+                    "type": "string"
+                },
                 "price": {
-                    "type": "number"
-                }
-            }
-        },
-        "controllers.GetCatalogRequest": {
-            "type": "object",
-            "properties": {
-                "category": {
+                    "type": "string"
+                },
+                "timeRes": {
                     "type": "string"
                 }
             }
@@ -680,15 +632,26 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.ProfileInfoRequest": {
+        "controllers.MedCardRequest": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 }
             }
         },
-        "controllers.ProfileInfoResponse": {
+        "controllers.MedCardResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "controllers.MedCardsInfoResponse": {
             "type": "object",
             "properties": {
                 "errorMessage": {
@@ -718,6 +681,25 @@ const docTemplate = `{
                 }
             }
         },
+        "controllers.SendCodeRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.SendCodeResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "models.CatalogItem": {
             "type": "object",
             "properties": {
@@ -736,9 +718,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "imageUrl": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -746,9 +725,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "string"
                 },
-                "timeRes": {
+                "timeResult": {
                     "type": "string"
                 }
             }
@@ -816,7 +795,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "5a37-92-124-163-102.ngrok-free.app",
+	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Smart Lab",

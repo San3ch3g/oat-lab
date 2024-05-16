@@ -3,15 +3,16 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"oat-lab-module/internal/pkg/services"
 )
 
 type CreateCatalogRequest struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float32 `json:"price"`
-	Category    string  `json:"category,omitempty"`
-	Image       string  `json:"image,omitempty"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Price       string `json:"price"`
+	TimeRes     string `json:"timeResult"`
+	Preparation string `json:"preparation"`
+	BIO         string `json:"bio"`
+	Category    string `json:"category"`
 }
 
 type CreateCatalogResponse struct {
@@ -37,10 +38,10 @@ func (s *Server) CreateCatalogItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, CreateCatalogResponse{Success: false, Message: err.Error()})
 		return
 	}
-	imageBase64 := []byte(request.Image)
-
-	imageLink, err := services.SaveImage(*s.cfg, imageBase64)
-	err = s.storage.CreateCatalogItem(request.Name, request.Description, request.Category, request.Price, imageLink)
+	//imageBase64 := []byte(request.Image)
+	//
+	//imageLink, err := services.SaveImage(*s.cfg, imageBase64)
+	err := s.storage.CreateCatalogItem(request.Name, request.Description, request.Category, request.Price, request.BIO, request.TimeRes, request.Preparation)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, CreateCatalogResponse{Success: false, Message: err.Error()})
 		return

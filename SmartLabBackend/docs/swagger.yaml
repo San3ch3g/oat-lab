@@ -1,19 +1,5 @@
 basePath: /
 definitions:
-  controllers.AuthorizeRequest:
-    properties:
-      email:
-        type: string
-    type: object
-  controllers.AuthorizeResponse:
-    properties:
-      errorMessage:
-        type: string
-      id:
-        type: integer
-      success:
-        type: boolean
-    type: object
   controllers.CheckCodeRequest:
     properties:
       code:
@@ -25,21 +11,25 @@ definitions:
     properties:
       message:
         type: string
-      success:
-        type: boolean
+      userId:
+        type: integer
     type: object
   controllers.CreateCatalogRequest:
     properties:
+      bio:
+        type: string
       category:
         type: string
       description:
         type: string
-      image:
-        type: string
       name:
         type: string
+      preparation:
+        type: string
       price:
-        type: number
+        type: string
+      timeResult:
+        type: string
     type: object
   controllers.CreateCatalogResponse:
     properties:
@@ -48,7 +38,7 @@ definitions:
       success:
         type: boolean
     type: object
-  controllers.CreateProfileRequest:
+  controllers.CreateMedCardRequest:
     properties:
       birthDate:
         type: string
@@ -65,7 +55,7 @@ definitions:
       sex:
         $ref: '#/definitions/models.SexType'
     type: object
-  controllers.CreateProfileResponse:
+  controllers.CreateMedCardResponse:
     properties:
       message:
         type: string
@@ -84,25 +74,10 @@ definitions:
       success:
         type: boolean
     type: object
-  controllers.DeleteProfileRequest:
-    properties:
-      id:
-        type: integer
-    type: object
-  controllers.DeleteProfileResponse:
-    properties:
-      message:
-        type: string
-      success:
-        type: boolean
-    type: object
-  controllers.GetCatalogItemByIdRequest:
-    properties:
-      itemId:
-        type: integer
-    type: object
   controllers.GetCatalogItemByIdResponse:
     properties:
+      bio:
+        type: string
       category:
         type: string
       createdAt:
@@ -117,12 +92,11 @@ definitions:
         type: string
       name:
         type: string
+      preparation:
+        type: string
       price:
-        type: number
-    type: object
-  controllers.GetCatalogRequest:
-    properties:
-      category:
+        type: string
+      timeRes:
         type: string
     type: object
   controllers.GetCatalogResponse:
@@ -134,12 +108,19 @@ definitions:
       errorMessage:
         type: string
     type: object
-  controllers.ProfileInfoRequest:
+  controllers.MedCardRequest:
     properties:
-      email:
-        type: string
+      id:
+        type: integer
     type: object
-  controllers.ProfileInfoResponse:
+  controllers.MedCardResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.MedCardsInfoResponse:
     properties:
       errorMessage:
         type: string
@@ -158,6 +139,18 @@ definitions:
       success:
         type: boolean
     type: object
+  controllers.SendCodeRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  controllers.SendCodeResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+    type: object
   models.CatalogItem:
     properties:
       bio:
@@ -170,15 +163,13 @@ definitions:
         type: string
       id:
         type: integer
-      imageUrl:
-        type: string
       name:
         type: string
       preparation:
         type: string
       price:
-        type: number
-      timeRes:
+        type: string
+      timeResult:
         type: string
     type: object
   models.CatalogItemCategory:
@@ -222,43 +213,13 @@ definitions:
     x-enum-varnames:
     - MaleSex
     - WomanSex
-host: 5a37-92-124-163-102.ngrok-free.app
+host: localhost:8080
 info:
   contact: {}
   description: API server for Smart Lab
   title: Smart Lab
   version: "1.0"
 paths:
-  /auth/authorize:
-    post:
-      consumes:
-      - application/json
-      description: Отправляет код на email и создаёт запись в бд
-      parameters:
-      - description: Запрос для отправки кода и создания записи в бд
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.AuthorizeRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controllers.AuthorizeResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.AuthorizeResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controllers.AuthorizeResponse'
-      summary: Проверка email
-      tags:
-      - Auth
   /auth/check-code:
     post:
       consumes:
@@ -287,6 +248,36 @@ paths:
           schema:
             $ref: '#/definitions/controllers.CheckCodeResponse'
       summary: Проверка кода
+      tags:
+      - Auth
+  /auth/send-code:
+    post:
+      consumes:
+      - application/json
+      description: Отправляет код на email и создаёт запись в бд
+      parameters:
+      - description: Запрос для отправки кода и создания записи в бд
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SendCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.SendCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.SendCodeResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.SendCodeResponse'
+      summary: Проверка email
       tags:
       - Auth
   /auth/send-code-again:
@@ -378,18 +369,17 @@ paths:
       summary: Создание новости
       tags:
       - Catalog
-  /catalog/get:
-    post:
+  /catalog/:
+    get:
       consumes:
       - application/json
       description: Получает новости из каталога по категории
       parameters:
-      - description: Запрос для получения новостей из каталога
-        in: body
-        name: request
+      - description: Категория для получения новостей из каталога
+        in: query
+        name: category
         required: true
-        schema:
-          $ref: '#/definitions/controllers.GetCatalogRequest'
+        type: string
       produces:
       - application/json
       responses:
@@ -408,18 +398,17 @@ paths:
       summary: Получение новостей из каталога
       tags:
       - Catalog
-  /catalog/get-by-id:
-    post:
+  /catalog/by-id:
+    get:
       consumes:
       - application/json
       description: Получает элемент каталога по его ID.
       parameters:
-      - description: Тело запроса с itemId
-        in: body
-        name: request
+      - description: ID элемента каталога
+        in: query
+        name: itemId
         required: true
-        schema:
-          $ref: '#/definitions/controllers.GetCatalogItemByIdRequest'
+        type: integer
       produces:
       - application/json
       responses:
@@ -438,7 +427,7 @@ paths:
       summary: Получить элемент каталога по ID.
       tags:
       - Catalog
-  /profile:
+  /med-card:
     delete:
       consumes:
       - application/json
@@ -449,54 +438,53 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/controllers.DeleteProfileRequest'
+          $ref: '#/definitions/controllers.MedCardRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.DeleteProfileResponse'
+            $ref: '#/definitions/controllers.MedCardResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controllers.DeleteProfileResponse'
+            $ref: '#/definitions/controllers.MedCardResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.DeleteProfileResponse'
+            $ref: '#/definitions/controllers.MedCardResponse'
       summary: Удаление профиля пользователя
       tags:
-      - Profiles
+      - MedCards
     get:
       consumes:
       - application/json
       description: Получает информацию о профиле пользователя по email
       parameters:
-      - description: Запрос для получения информации о профиле пользователя
-        in: body
-        name: request
+      - description: Email пользователя
+        in: query
+        name: email
         required: true
-        schema:
-          $ref: '#/definitions/controllers.ProfileInfoRequest'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.ProfileInfoResponse'
+            $ref: '#/definitions/controllers.MedCardsInfoResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controllers.ProfileInfoResponse'
+            $ref: '#/definitions/controllers.MedCardsInfoResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.ProfileInfoResponse'
+            $ref: '#/definitions/controllers.MedCardsInfoResponse'
       summary: Получение информации о профиле пользователя
       tags:
-      - Profiles
+      - MedCards
     post:
       consumes:
       - application/json
@@ -507,23 +495,23 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/controllers.CreateProfileRequest'
+          $ref: '#/definitions/controllers.CreateMedCardRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/controllers.CreateProfileResponse'
+            $ref: '#/definitions/controllers.CreateMedCardResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controllers.CreateProfileResponse'
+            $ref: '#/definitions/controllers.CreateMedCardResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.CreateProfileResponse'
+            $ref: '#/definitions/controllers.CreateMedCardResponse'
       summary: Создание профиля пользователя
       tags:
-      - Profiles
+      - MedCards
 swagger: "2.0"
