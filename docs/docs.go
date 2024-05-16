@@ -15,6 +15,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/authorize": {
+            "post": {
+                "description": "Отправляет код на email и создаёт запись в бд",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Проверка email",
+                "parameters": [
+                    {
+                        "description": "Запрос для отправки кода и создания записи в бд",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthorizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthorizeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthorizeResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AuthorizeResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/check-code": {
             "post": {
                 "description": "Проверяет код, отправленный на указанный email",
@@ -61,52 +107,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/check-user": {
-            "post": {
-                "description": "Проверяет, зарегистрирован ли пользователь с указанным email",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Проверка пользователя",
-                "parameters": [
-                    {
-                        "description": "Запрос для проверки пользователя",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckUserResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckUserResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckUserResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/auth/send-code-again": {
             "post": {
                 "description": "Повторно отправляет код подтверждения на email пользователя",
@@ -148,98 +148,6 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/controllers.SendCodeAgainResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/sign-in": {
-            "post": {
-                "description": "Выполняет вход пользователя в систему с использованием email и пароля",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Вход пользователя",
-                "parameters": [
-                    {
-                        "description": "Запрос для входа пользователя",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignInRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignInResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignInResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignInResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/sign-up": {
-            "post": {
-                "description": "Регистрирует нового пользователя с использованием email и пароля",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Регистрация пользователя",
-                "parameters": [
-                    {
-                        "description": "Запрос для регистрации пользователя",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignUpRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignUpResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignUpResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignUpResponse"
                         }
                     }
                 }
@@ -381,6 +289,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/catalog/get-by-id": {
+            "post": {
+                "description": "Получает элемент каталога по его ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Catalog"
+                ],
+                "summary": "Получить элемент каталога по ID.",
+                "parameters": [
+                    {
+                        "description": "Тело запроса с itemId",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogItemByIdRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogItemByIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogItemByIdResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCatalogItemByIdResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "description": "Получает информацию о профиле пользователя по email",
@@ -517,6 +471,28 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.AuthorizeRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.AuthorizeResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "controllers.CheckCodeRequest": {
             "type": "object",
             "properties": {
@@ -539,25 +515,6 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.CheckUserRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "controllers.CheckUserResponse": {
-            "type": "object",
-            "properties": {
-                "errorMessage": {
-                    "type": "string"
-                },
-                "isRegistered": {
-                    "type": "boolean"
-                }
-            }
-        },
         "controllers.CreateCatalogRequest": {
             "type": "object",
             "properties": {
@@ -565,6 +522,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 },
                 "name": {
@@ -661,6 +621,43 @@ const docTemplate = `{
                 }
             }
         },
+        "controllers.GetCatalogItemByIdRequest": {
+            "type": "object",
+            "properties": {
+                "itemId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controllers.GetCatalogItemByIdResponse": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
         "controllers.GetCatalogRequest": {
             "type": "object",
             "properties": {
@@ -700,7 +697,7 @@ const docTemplate = `{
                 "profileInfo": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Profile"
+                        "$ref": "#/definitions/models.MedCard"
                     }
                 }
             }
@@ -721,53 +718,12 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.SignInRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "controllers.SignInResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "controllers.SignUpRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "controllers.SignUpResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
         "models.CatalogItem": {
             "type": "object",
             "properties": {
+                "bio": {
+                    "type": "string"
+                },
                 "category": {
                     "$ref": "#/definitions/models.CatalogItemCategory"
                 },
@@ -786,8 +742,14 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "preparation": {
+                    "type": "string"
+                },
                 "price": {
                     "type": "number"
+                },
+                "timeRes": {
+                    "type": "string"
                 }
             }
         },
@@ -808,7 +770,7 @@ const docTemplate = `{
                 "Complex"
             ]
         },
-        "models.Profile": {
+        "models.MedCard": {
             "type": "object",
             "properties": {
                 "birthDate": {
@@ -854,7 +816,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "b683-2a03-d000-6583-1ba0-48f1-c600-58b8-2a33.ngrok-free.app",
+	Host:             "5a37-92-124-163-102.ngrok-free.app",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Smart Lab",

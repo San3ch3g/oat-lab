@@ -15,6 +15,9 @@ type CatalogItem struct {
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
 	Price       float32             `json:"price"`
+	TimeRes     string              `json:"timeRes"`
+	Preparation string              `json:"preparation"`
+	BIO         string              `json:"bio"`
 	Category    CatalogItemCategory `json:"category" gorm:"default:'all'"`
 	ImageUrl    string              `json:"imageUrl"`
 	CreatedAt   string              `json:"createdAt"`

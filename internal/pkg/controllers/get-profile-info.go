@@ -12,7 +12,7 @@ type ProfileInfoRequest struct {
 
 type ProfileInfoResponse struct {
 	ErrorMessage string           `json:"errorMessage,omitempty"`
-	ProfilesInfo []models.Profile `json:"profileInfo"`
+	ProfilesInfo []models.MedCard `json:"profileInfo"`
 }
 
 // GetProfileInfo получает информацию о профиле пользователя

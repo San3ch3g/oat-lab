@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"oat-lab-module/internal/pkg/services"
 )
 
 type CreateCatalogRequest struct {
@@ -10,6 +11,7 @@ type CreateCatalogRequest struct {
 	Description string  `json:"description"`
 	Price       float32 `json:"price"`
 	Category    string  `json:"category,omitempty"`
+	Image       string  `json:"image,omitempty"`
 }
 
 type CreateCatalogResponse struct {
@@ -35,7 +37,10 @@ func (s *Server) CreateCatalogItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, CreateCatalogResponse{Success: false, Message: err.Error()})
 		return
 	}
-	err := s.storage.CreateCatalogItem(request.Name, request.Description, request.Category, request.Price)
+	imageBase64 := []byte(request.Image)
+
+	imageLink, err := services.SaveImage(*s.cfg, imageBase64)
+	err = s.storage.CreateCatalogItem(request.Name, request.Description, request.Category, request.Price, imageLink)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, CreateCatalogResponse{Success: false, Message: err.Error()})
 		return

@@ -57,7 +57,7 @@ func MustNewPostgresDB(cfg *config.Config) *gorm.DB {
 	if err != nil {
 		fmt.Println("table 'users' is already exist")
 	}
-	err = db.AutoMigrate(&models.Profile{})
+	err = db.AutoMigrate(&models.MedCard{})
 	if err != nil {
 		fmt.Println("table 'profiles' is already exist")
 	}
@@ -89,75 +89,6 @@ func createDataType(db *gorm.DB, dataType string, values []string) error {
 		return err
 	}
 	fmt.Printf("Data type %s created successfully\n", dataType)
-	return nil
-}
-
-func (s *Storage) isUserExist(email string) (bool, error) {
-	var user models.User
-	err := s.db.Where("email = ?", email).First(&user).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, nil
-		}
-		return false, err
-	}
-	return true, nil
-}
-
-func (s *Storage) CheckUser(cfg config.Config, email string) (bool, error) {
-	var foundUser models.User
-	err := s.db.Where("email = ?", email).First(&foundUser).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			code := services.GenerateCodeForEmail()
-			err := services.SendCodeToEmailService(cfg, code, email)
-			if err != nil {
-				return false, err
-			}
-
-			err = s.db.Create(&models.CodeForEmail{Email: email, Code: code, CreatedAt: time.Now().Format(time.RFC3339)}).Error
-			if err != nil {
-				return false, err
-			}
-			return false, nil
-		}
-		return false, err
-	}
-	return true, nil
-}
-
-func (s *Storage) SignUp(email string, password string) error {
-	userExists, err := s.isUserExist(email)
-	if err != nil {
-		return fmt.Errorf("failed to check user: %w", err)
-	}
-
-	if userExists {
-		var NewUser models.User
-
-		err := s.db.Where("email = ?", email).First(&NewUser).Error
-		if err != nil {
-			return err
-		}
-
-		NewUser.Password = password
-		err = s.db.Save(&NewUser).Error
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (s *Storage) SignIn(email string, password string) error {
-	var existingUser models.User
-	err := s.db.Where("email = ?", email).First(&existingUser).Error
-	if err != nil {
-		return err
-	}
-	if existingUser.Password != password {
-		return fmt.Errorf("invalid password")
-	}
 	return nil
 }
 
@@ -208,12 +139,12 @@ func (s *Storage) SendCodeAgain(cfg config.Config, email string) error {
 	return nil
 }
 
-func (s *Storage) CreateCatalogItem(name, description, category string, price float32) error {
+func (s *Storage) CreateCatalogItem(name, description, category string, price float32, imageLink string) error {
 	var foundNews models.CatalogItem
 	err := s.db.Where("name = ?", name).First(&foundNews).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			newNews := models.CatalogItem{Name: name, Description: description, Price: price, Category: models.CatalogItemCategory(category), CreatedAt: time.Now().Format(time.RFC3339)}
+			newNews := models.CatalogItem{Name: name, Description: description, Price: price, Category: models.CatalogItemCategory(category), ImageUrl: imageLink, CreatedAt: time.Now().Format(time.RFC3339)}
 			err := s.db.Create(&newNews).Error
 			if err != nil {
 				return err
@@ -270,8 +201,9 @@ func (s *Storage) DeleteCatalogItem(id uint32) error {
 	}
 	return nil
 }
+
 func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, middleName, birthDate string, sex models.SexType, profileImage string) error {
-	var foundProfile models.Profile
+	var foundProfile models.MedCard
 	var foundUser models.User
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
 	if err != nil {
@@ -298,8 +230,24 @@ func (s *Storage) CreateProfile(cfg config.Config, email, firstName, lastName, m
 	return nil
 }
 
-func (s *Storage) GetProfiles(email string) ([]models.Profile, error) {
-	var allProfiles []models.Profile
+func (s *Storage) Authorize(cfg config.Config, email string) (uint32, error) {
+	var newUser models.User
+	newUser.Email = email
+	newUser.CreatedAt = time.Now().Format(time.RFC3339)
+	err := s.db.Create(&newUser).Error
+	if err != nil {
+		return 0, err
+	}
+	code := services.GenerateCodeForEmail()
+	err = services.SendCodeToEmailService(cfg, code, email)
+	if err != nil {
+		return 0, err
+	}
+	return newUser.Id, nil
+}
+
+func (s *Storage) GetProfiles(email string) ([]models.MedCard, error) {
+	var allProfiles []models.MedCard
 	var foundUser models.User
 	err := s.db.Where("email = ?", email).First(&foundUser).Error
 	if err != nil {
@@ -313,9 +261,17 @@ func (s *Storage) GetProfiles(email string) ([]models.Profile, error) {
 }
 
 func (s *Storage) DeleteProfile(id uint32) error {
-	err := s.db.Where("id = ?", id).Delete(&models.Profile{}).Error
+	err := s.db.Where("id = ?", id).Delete(&models.MedCard{}).Error
 	if err != nil {
 		return err
 	}
 	return nil
+}
+func (s *Storage) GetCatalogItemById(itemId uint32) (models.CatalogItem, error) {
+	var foundCatalogItem models.CatalogItem
+	err := s.db.Where("id = ?", itemId).First(&foundCatalogItem).Error
+	if err != nil {
+		return foundCatalogItem, err
+	}
+	return foundCatalogItem, nil
 }

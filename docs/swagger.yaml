@@ -1,5 +1,19 @@
 basePath: /
 definitions:
+  controllers.AuthorizeRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  controllers.AuthorizeResponse:
+    properties:
+      errorMessage:
+        type: string
+      id:
+        type: integer
+      success:
+        type: boolean
+    type: object
   controllers.CheckCodeRequest:
     properties:
       code:
@@ -14,23 +28,13 @@ definitions:
       success:
         type: boolean
     type: object
-  controllers.CheckUserRequest:
-    properties:
-      email:
-        type: string
-    type: object
-  controllers.CheckUserResponse:
-    properties:
-      errorMessage:
-        type: string
-      isRegistered:
-        type: boolean
-    type: object
   controllers.CreateCatalogRequest:
     properties:
       category:
         type: string
       description:
+        type: string
+      image:
         type: string
       name:
         type: string
@@ -92,6 +96,30 @@ definitions:
       success:
         type: boolean
     type: object
+  controllers.GetCatalogItemByIdRequest:
+    properties:
+      itemId:
+        type: integer
+    type: object
+  controllers.GetCatalogItemByIdResponse:
+    properties:
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      errorMessage:
+        type: string
+      id:
+        type: integer
+      imageUrl:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+    type: object
   controllers.GetCatalogRequest:
     properties:
       category:
@@ -117,7 +145,7 @@ definitions:
         type: string
       profileInfo:
         items:
-          $ref: '#/definitions/models.Profile'
+          $ref: '#/definitions/models.MedCard'
         type: array
     type: object
   controllers.SendCodeAgainRequest:
@@ -130,36 +158,10 @@ definitions:
       success:
         type: boolean
     type: object
-  controllers.SignInRequest:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    type: object
-  controllers.SignInResponse:
-    properties:
-      message:
-        type: string
-      success:
-        type: boolean
-    type: object
-  controllers.SignUpRequest:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    type: object
-  controllers.SignUpResponse:
-    properties:
-      message:
-        type: string
-      success:
-        type: boolean
-    type: object
   models.CatalogItem:
     properties:
+      bio:
+        type: string
       category:
         $ref: '#/definitions/models.CatalogItemCategory'
       createdAt:
@@ -172,8 +174,12 @@ definitions:
         type: string
       name:
         type: string
+      preparation:
+        type: string
       price:
         type: number
+      timeRes:
+        type: string
     type: object
   models.CatalogItemCategory:
     enum:
@@ -189,7 +195,7 @@ definitions:
     - Covid
     - Popular
     - Complex
-  models.Profile:
+  models.MedCard:
     properties:
       birthDate:
         type: string
@@ -216,13 +222,43 @@ definitions:
     x-enum-varnames:
     - MaleSex
     - WomanSex
-host: b683-2a03-d000-6583-1ba0-48f1-c600-58b8-2a33.ngrok-free.app
+host: 5a37-92-124-163-102.ngrok-free.app
 info:
   contact: {}
   description: API server for Smart Lab
   title: Smart Lab
   version: "1.0"
 paths:
+  /auth/authorize:
+    post:
+      consumes:
+      - application/json
+      description: Отправляет код на email и создаёт запись в бд
+      parameters:
+      - description: Запрос для отправки кода и создания записи в бд
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.AuthorizeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.AuthorizeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.AuthorizeResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.AuthorizeResponse'
+      summary: Проверка email
+      tags:
+      - Auth
   /auth/check-code:
     post:
       consumes:
@@ -253,36 +289,6 @@ paths:
       summary: Проверка кода
       tags:
       - Auth
-  /auth/check-user:
-    post:
-      consumes:
-      - application/json
-      description: Проверяет, зарегистрирован ли пользователь с указанным email
-      parameters:
-      - description: Запрос для проверки пользователя
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.CheckUserRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controllers.CheckUserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.CheckUserResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controllers.CheckUserResponse'
-      summary: Проверка пользователя
-      tags:
-      - Auth
   /auth/send-code-again:
     post:
       consumes:
@@ -311,67 +317,6 @@ paths:
           schema:
             $ref: '#/definitions/controllers.SendCodeAgainResponse'
       summary: Повторная отправка кода подтверждения
-      tags:
-      - Auth
-  /auth/sign-in:
-    post:
-      consumes:
-      - application/json
-      description: Выполняет вход пользователя в систему с использованием email и
-        пароля
-      parameters:
-      - description: Запрос для входа пользователя
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.SignInRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controllers.SignInResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.SignInResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/controllers.SignInResponse'
-      summary: Вход пользователя
-      tags:
-      - Auth
-  /auth/sign-up:
-    post:
-      consumes:
-      - application/json
-      description: Регистрирует нового пользователя с использованием email и пароля
-      parameters:
-      - description: Запрос для регистрации пользователя
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.SignUpRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controllers.SignUpResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.SignUpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controllers.SignUpResponse'
-      summary: Регистрация пользователя
       tags:
       - Auth
   /catalog:
@@ -461,6 +406,36 @@ paths:
           schema:
             $ref: '#/definitions/controllers.GetCatalogResponse'
       summary: Получение новостей из каталога
+      tags:
+      - Catalog
+  /catalog/get-by-id:
+    post:
+      consumes:
+      - application/json
+      description: Получает элемент каталога по его ID.
+      parameters:
+      - description: Тело запроса с itemId
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.GetCatalogItemByIdRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogItemByIdResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogItemByIdResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.GetCatalogItemByIdResponse'
+      summary: Получить элемент каталога по ID.
       tags:
       - Catalog
   /profile:
