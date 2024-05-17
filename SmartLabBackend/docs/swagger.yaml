@@ -235,7 +235,7 @@ definitions:
     x-enum-varnames:
     - MaleSex
     - WomanSex
-host: 407e-95-189-144-121.ngrok-free.app
+host: 4aa3-95-189-144-121.ngrok-free.app
 info:
   contact: {}
   description: API server for Smart Lab

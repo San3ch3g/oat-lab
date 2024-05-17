@@ -873,7 +873,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "407e-95-189-144-121.ngrok-free.app",
+	Host:             "4aa3-95-189-144-121.ngrok-free.app",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Smart Lab",

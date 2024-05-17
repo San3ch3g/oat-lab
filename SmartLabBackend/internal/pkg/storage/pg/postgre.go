@@ -70,10 +70,6 @@ func MustNewPostgresDB(cfg *config.Config) *gorm.DB {
 	if err != nil {
 		fmt.Println("table 'catalog_items' is already exist")
 	}
-	err = db.AutoMigrate(&models.Order{})
-	if err != nil {
-		fmt.Println("table 'orders' is already exist")
-	}
 	return db
 }
 

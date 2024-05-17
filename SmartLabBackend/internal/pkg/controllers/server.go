@@ -48,12 +48,6 @@ func (s *Server) initRoutes() {
 		catalog.DELETE("", s.DeleteCatalogItem)     // ✔
 	}
 
-	order := s.router.Group("/order")
-	{
-		order.POST("", s.CreateOrder) // TODO Реализовать
-		order.GET("", s.GetOrder)     // TODO Реализовать
-	}
-
 	profile := s.router.Group("/med-card")
 	{
 		profile.PUT("", s.UpdateMedCard)
